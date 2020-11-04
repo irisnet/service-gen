@@ -10,26 +10,26 @@ const (
 
 type State int
 
-// 状态变量
+// Status returned of serviceCallback
 const (
 	Success = iota
 	ClientError
 	ServiceError
 )
 
-// RequestResult 业务逻辑结果
+// RequestResult is result of serviceCallback
 type RequestResult struct {
-	State   State // 使用状态变量
+	State   State // Use status returned
 	Message string
 }
 
-// Result 逻辑函数处理结果
+// Result of serviceCallback
 type Result struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
 
-// Serialize 序列化 output
+// Marshal output
 func (output *ServiceOutput) Marshal() ([]byte, error) {
 	data, err := json.Marshal(output)
 	if err != nil {

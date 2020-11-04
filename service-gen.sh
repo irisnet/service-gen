@@ -1,29 +1,29 @@
 #! /bin/bash
-# 1 接收用户输入的参数
+# 1 Receive parameters
 type=$1
 lang=$2
 service_name=$3
 schema=$4
 output_dir=$5
 if [ x"$type" != x"provider" ];then
-  echo "目前只支持 provider"
+  echo "only supported provider currently"
   exit 8
 fi
 if [ x"$lang" != x"go" ];then
-  echo "目前只支持 go 语言"
+  echo "only supported golang currently"
   exit 8
 fi
 
-# 记录 genTool.sh 的绝对路径
+# Record genTool.sh's absolute path
 genToolPath=$(pwd)
 
-# 记录 schema 的绝对路径
+# Record schema's absolute path
 cd ${schema%/*}
 schema=${schema##*/}
 schema_path=$(pwd)
 cd $genToolPath
 
-# 记录 output_dir 的绝对路径
+# Record output_dir's absolute path
 if [ "${output_dir##*/}" = "" ];then
   cd $output_dir
 else
@@ -36,7 +36,7 @@ cd $genToolPath
 
 echo "Complete initialization."
 
-# 2 复制指定模板到指定项目路径
+# 2 Copy the specified template to the specified project path
 cd templates
 cd $type
 cd $lang
@@ -44,46 +44,45 @@ cp -r * $output_dir
 
 echo "Copy complete"
 
-# 3 修改文件夹名、包名、模板变量
-# 进入项目目录
+# 3 Modify template variables
 cd $output_dir
 
-# 修改文件夹名
+# Modify folder name
 mv {{service_name}} $service_name
 
-# 修改 app.go 中的服务名
+# Modify the service name in the app.go
 cd app
 sed -i 's/{{service_name}}/'${service_name}'/g' app.go
 
-# 修改 root.go 中的服务名
+# Modify the service name in the root.go
 cd ../cmd
 sed -i 's/{{service_name}}/'${service_name}'/g' root.go
 
-# 修改 start.go 中的服务名
+# Modify the service name in the start.go
 sed -i 's/{{service_name}}/'${service_name}'/g' start.go
 
-# 修改 cbHandler.go 中的服务名
+# Modify the service name in the cbHandler.go
 cd ../service
 sed -i 's/{{service_name}}/'${service_name}'/g' cbHandler.go
 
-# 修改 serviceCallback.go 中的服务名
+# Modify the service name in the serviceCallback.go
 cd ../$service_name
 sed -i 's/{{service_name}}/'${service_name}'/g' serviceCallback.go
 
-# 修改 types.go 中的服务名
+# Modify the service name in the types.go
 cd ../types
 sed -i 's/{{service_name}}/'${service_name}'/g' types.go
 
-# 修改 Makefile 中的服务名
+# Modify the service name in the Makefile
 cd ..
 sed -i 's/{{service_name}}/'${service_name}'/g' Makefile
 
 echo "Complete the modification."
 
-# 4 安装转换程序，读取 schema，转换为对应的语言结构
+# 4 Install converter, read schema.json, convert to the corresponding language structure
 cd $output_dir
 
-# 创建临时文件
+# Create temporary folder
 mkdir .temp
 cd .temp
 touch ServiceInput.json
@@ -95,23 +94,23 @@ if [ "$lang"x = "go"x ];then
   go build github.com/atombender/go-jsonschema/cmd/gojsonschema
 
   echo "Parsing JSON..."
-  # 解析 input 存入临时文件
+  # Parsing input
   json=$(cat "$schema_path/$schema")
   input=${json%%\"output\"*}
   input=${input%,*}
   echo ${input#*:} > ServiceInput.json
 
-  # 解析 output 存入临时文件
+  # Parsing output
   output=${json%\}*}
   echo ${output#*\"output\":} > ServiceOutput.json
 
-  # 转换为对应类
+  # Convert to the corresponding structure
   input=$(./gojsonschema -p types ServiceInput.json)
   output=$(./gojsonschema -p types ServiceOutput.json)
   
   cd $output_dir/types
 
-  # 把类写入到文件中
+  # Write to file
   touch input.go
   touch output.go
   echo "$input" >> input.go
@@ -125,11 +124,11 @@ else
   echo $lang
 fi
 
-# 清理临时文件
+# Clean up temporary files
 cd $output_dir
 rm -rf .temp
 
-# 5 使用 curl 安装项目依赖
+# 5 Installation project dependencies
 echo "Installing project dependencies..."
 
 if [ "$lang"x = "go"x ];then
