@@ -48,38 +48,38 @@ cd $output_dir
 rm -rf config
 
 # Modify folder name
-mv {{servicename}} $service_name
+mv {{service_name}} $service_name
 
 # Modify the service name in the app.go
 cd app
-sed -i 's/{{servicename}}/'${service_name}'/g' app.go
+sed -i 's/{{service_name}}/'${service_name}'/g' app.go
 
 # Modify the service name in the root.go
 cd ../cmd
-sed -i 's/{{servicename}}/'${service_name}'/g' root.go
+sed -i 's/{{service_name}}/'${service_name}'/g' root.go
 
 # Modify the service name in the start.go
-sed -i 's/{{servicename}}/'${service_name}'/g' start.go
+sed -i 's/{{service_name}}/'${service_name}'/g' start.go
 
 # Modify the service name in the callback_handler.go
 cd ../service
-sed -i 's/{{servicename}}/'${service_name}'/g' callback_handler.go
+sed -i 's/{{service_name}}/'${service_name}'/g' callback_handler.go
 
-# Modify the service name in the serviceCallback.go
+# Modify the service name in the service_callback.go
 cd ../$service_name
-sed -i 's/{{servicename}}/'${service_name}'/g' serviceCallback.go
+sed -i 's/{{service_name}}/'${service_name}'/g' service_callback.go
 
 # Modify the service name in the config.go
 cd ../common
-sed -i 's/{{servicename}}/'${service_name}'/g' config.go
+sed -i 's/{{service_name}}/'${service_name}'/g' config.go
 
 # Modify the service name in the types.go
 cd ../types
-sed -i 's/{{servicename}}/'${service_name}'/g' types.go
+sed -i 's/{{service_name}}/'${service_name}'/g' types.go
 
 # Modify the service name in the Makefile
 cd ..
-sed -i 's/{{servicename}}/'${service_name}'/g' Makefile
+sed -i 's/{{service_name}}/'${service_name}'/g' Makefile
 
 echo "Complete the modification."
 
