@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	log "github.com/sirupsen/logrus"
-	"gitlab.bianjie.ai/tianle/service-gen/types"
+	"github.com/irisnet/service-gen/types"
 )
 
 type ServiceCallback func(reqID, input string) (output *types.ServiceOutput, requestResult *types.RequestResult)

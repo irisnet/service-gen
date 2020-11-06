@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/spf13/cobra"
-	"gitlab.bianjie.ai/tianle/service-gen/app"
-	"gitlab.bianjie.ai/tianle/service-gen/common"
-	"gitlab.bianjie.ai/tianle/service-gen/service"
-	"gitlab.bianjie.ai/tianle/service-gen/{{service_name}}"
+	"github.com/irisnet/service-gen/app"
+	"github.com/irisnet/service-gen/common"
+	"github.com/irisnet/service-gen/service"
+	"github.com/irisnet/service-gen/{{service_name}}"
 )
 
 func StartCmd() *cobra.Command {

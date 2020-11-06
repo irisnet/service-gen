@@ -6,7 +6,7 @@ import (
 
 	"github.com/irisnet/service-sdk-go/types"
 	"github.com/spf13/viper"
-	"gitlab.bianjie.ai/tianle/service-gen/common"
+	"github.com/irisnet/service-gen/common"
 )
 
 // default config variables

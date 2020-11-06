@@ -6,8 +6,8 @@ import (
 
 	gp "github.com/howeyc/gopass"
 	"github.com/spf13/cobra"
-	"gitlab.bianjie.ai/tianle/service-gen/common"
-	"gitlab.bianjie.ai/tianle/service-gen/service"
+	"github.com/irisnet/service-gen/common"
+	"github.com/irisnet/service-gen/service"
 )
 
 var (

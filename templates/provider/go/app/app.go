@@ -2,9 +2,9 @@ package app
 
 import (
 	log "github.com/sirupsen/logrus"
-	"gitlab.bianjie.ai/tianle/service-gen/service"
-	"gitlab.bianjie.ai/tianle/service-gen/{{service_name}}"
-	"gitlab.bianjie.ai/tianle/service-gen/types"
+	"github.com/irisnet/service-gen/service"
+	"github.com/irisnet/service-gen/{{service_name}}"
+	"github.com/irisnet/service-gen/types"
 )
 
 // App represents the provider application

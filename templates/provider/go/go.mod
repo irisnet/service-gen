@@ -1,4 +1,4 @@
-module gitlab.bianjie.ai/tianle/service-gen
+module github.com/irisnet/service-gen
 
 go 1.15
 

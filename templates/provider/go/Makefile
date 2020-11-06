@@ -4,4 +4,4 @@ export GO111MODULE = on
 
 install:
 	@echo "installing..."
-	@go build -mod=readonly -o $${GOBIN-$${GOPATH-$$HOME/go}/bin}/{{service_name}}-sp gitlab.bianjie.ai/tianle/service-gen/cmd
+	@go build -mod=readonly -o $${GOBIN-$${GOPATH-$$HOME/go}/bin}/{{service_name}}-sp github.com/irisnet/service-gen/cmd

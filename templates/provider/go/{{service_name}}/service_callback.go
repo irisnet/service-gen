@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/tidwall/gjson"
-	"gitlab.bianjie.ai/tianle/service-gen/types"
+	"github.com/irisnet/service-gen/types"
 )
 
 // ServiceCallback provider need to supplementary service logic
