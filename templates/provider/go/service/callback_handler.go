@@ -3,8 +3,8 @@ package service
 import (
 	"encoding/json"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/irisnet/service-gen/types"
+	log "github.com/sirupsen/logrus"
 )
 
 type ServiceCallback func(reqID, input string) (output *types.ServiceOutput, requestResult *types.RequestResult)
@@ -17,7 +17,7 @@ var CallbackHandler = func(reqID, input string, serviceCb ServiceCallback, logge
 	// Convert the requestresult to the corresponding error code
 	res := resultConvert(requestResult)
 
-	return MarshalResAndOutput(res, serviceOutput, logger)
+	return marshalResAndOutput(res, serviceOutput, logger)
 }
 
 // Convert the requestresult to the corresponding error code
@@ -43,7 +43,7 @@ func resultConvert(requestResult *types.RequestResult) *types.Result {
 	return &res
 }
 
-func MarshalResAndOutput(res *types.Result, serviceOutput *types.ServiceOutput, logger *log.Logger) (response, result string) {
+func marshalResAndOutput(res *types.Result, serviceOutput *types.ServiceOutput, logger *log.Logger) (response, result string) {
 	resBz, err := json.Marshal(res)
 	if err != nil {
 		panic(err)
