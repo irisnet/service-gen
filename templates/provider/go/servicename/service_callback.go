@@ -3,8 +3,8 @@ package {{service_name}}
 import (
 	"encoding/json"
 
-	"github.com/tidwall/gjson"
 	"github.com/irisnet/service-gen/types"
+	"github.com/tidwall/gjson"
 )
 
 // ServiceCallback provider need to supplementary service logic

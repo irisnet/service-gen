@@ -4,9 +4,9 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/irisnet/service-gen/common"
 	"github.com/irisnet/service-sdk-go/types"
 	"github.com/spf13/viper"
-	"github.com/irisnet/service-gen/common"
 )
 
 // default config variables

@@ -1,8 +1,10 @@
 package types
 
 const (
-	ServiceName = "{{service_name}}"
+	{{service_name}} = "{{service_name}}"
 )
+
+type ServiceCallback func(reqID, input string) (output *ServiceOutput, requestResult *RequestResult)
 
 type State int
 
@@ -29,3 +31,6 @@ type Response struct {
 	Header string `json:"header"`
 	Body   string `json:"body"`
 }
+
+type ServiceInput struct{}
+type ServiceOutput struct{}

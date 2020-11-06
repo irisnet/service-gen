@@ -7,10 +7,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type ServiceCallback func(reqID, input string) (output *types.ServiceOutput, requestResult *types.RequestResult)
-
 // CallbackHandler Servicecallback processing function
-var CallbackHandler = func(reqID, input string, serviceCb ServiceCallback, logger *log.Logger) (response, result string) {
+var CallbackHandler = func(reqID, input string, serviceCb types.ServiceCallback, logger *log.Logger) (response, result string) {
 	// Receiving serviceCallback processing results
 	serviceOutput, requestResult := serviceCb(reqID, input)
 

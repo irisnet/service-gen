@@ -2,17 +2,13 @@ package common
 
 import (
 	"fmt"
-	"os"
 
+	"github.com/irisnet/service-gen/utils"
 	"github.com/spf13/viper"
 )
 
-const (
-	DefaultConfigFileName = "config.yaml"
-)
-
 var (
-	ConfigPath = os.ExpandEnv("$HOME/.{{service_name}}-sp/config.yaml")
+	ConfigPath = utils.MustGetHomeDir()
 )
 
 // LoadYAMLConfig loads the YAML config file

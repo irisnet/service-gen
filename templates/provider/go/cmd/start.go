@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/spf13/cobra"
 	"github.com/irisnet/service-gen/app"
 	"github.com/irisnet/service-gen/common"
 	"github.com/irisnet/service-gen/service"
 	"github.com/irisnet/service-gen/{{service_name}}"
+	"github.com/spf13/cobra"
 )
 
 func StartCmd() *cobra.Command {
