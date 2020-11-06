@@ -7,8 +7,8 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-// ServiceCallback provider need to supplementary service logic
-func ServiceCallback(reqID, input string) (output *types.ServiceOutput, requestResult *types.RequestResult) {
+// RequestCallback provider need to supplementary service logic
+func RequestCallback(reqID, input string) (output *types.ServiceOutput, requestResult *types.RequestResult) {
 	serviceInput, err := parseInput(input)
 	if err != nil {
 		requestResult = &types.RequestResult{

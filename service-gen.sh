@@ -65,9 +65,9 @@ sed -i 's/{{service_name}}/'${service_name}'/g' start.go
 cd ../service
 sed -i 's/{{service_name}}/'${service_name}'/g' callback_handler.go
 
-# Modify the service name in the service_callback.go
+# Modify the service name in the request_callback.go
 cd ../$service_name
-sed -i 's/{{service_name}}/'${service_name}'/g' service_callback.go
+sed -i 's/{{service_name}}/'${service_name}'/g' request_callback.go
 
 # Modify the service name in the config.go
 cd ../common

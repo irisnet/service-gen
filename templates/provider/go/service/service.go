@@ -2,9 +2,9 @@ package service
 
 import (
 	"github.com/irisnet/service-gen/common"
-	serviceTypes "github.com/irisnet/service-gen/types"
+	"github.com/irisnet/service-gen/types"
 	servicesdk "github.com/irisnet/service-sdk-go"
-	"github.com/irisnet/service-sdk-go/types"
+	sdkTypes "github.com/irisnet/service-sdk-go/types"
 	"github.com/irisnet/service-sdk-go/types/store"
 	log "github.com/sirupsen/logrus"
 )
@@ -54,7 +54,7 @@ func NewServiceClientWrapper(
 	if len(feeConfig) == 0 {
 		feeConfig = defaultFee
 	}
-	fee, err := types.ParseDecCoins(feeConfig)
+	fee, err := sdkTypes.ParseDecCoins(feeConfig)
 	if err != nil {
 		panic(err)
 	}
@@ -63,7 +63,7 @@ func NewServiceClientWrapper(
 		keyAlgorithm = defaultKeyAlgorithm
 	}
 
-	config := types.ClientConfig{
+	config := sdkTypes.ClientConfig{
 		NodeURI:  nodeRPCAddr,
 		GRPCAddr: nodeGRPCAddr,
 		ChainID:  chainID,
@@ -104,17 +104,17 @@ func MakeServiceClientWrapper(config Config, password string) ServiceClientWrapp
 }
 
 // SubscribeServiceRequest wraps service.SubscribeServiceRequest
-func (s ServiceClientWrapper) SubscribeServiceRequest({{service_name}} string, serviceCb serviceTypes.ServiceCallback) error {
+func (s ServiceClientWrapper) SubscribeServiceRequest({{service_name}} string, RequestCb types.RequestCallback) error {
 	callback := func(reqCtxID, reqID, input string) (output, result string) {
-		return CallbackHandler(reqID, input, serviceCb, s.Logger)
+		return CallbackHandler(reqID, input, RequestCb, s.Logger)
 	}
 	_, err := s.ServiceClient.SubscribeServiceRequest({{service_name}}, callback, s.BuildBaseTx())
 	return err
 }
 
 // BuildBaseTx builds a base tx
-func (s ServiceClientWrapper) BuildBaseTx() types.BaseTx {
-	return types.BaseTx{
+func (s ServiceClientWrapper) BuildBaseTx() sdkTypes.BaseTx {
+	return sdkTypes.BaseTx{
 		From:     s.KeyName,
 		Password: s.Password,
 	}

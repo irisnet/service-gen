@@ -1,27 +1,27 @@
 package types
 
 const (
-	{{service_name}} = "{{service_name}}"
+	ServiceName = "{{service_name}}"
 )
 
-type ServiceCallback func(reqID, input string) (output *ServiceOutput, requestResult *RequestResult)
+type RequestCallback func(reqID, input string) (output *ServiceOutput, requestResult *RequestResult)
 
 type State int
 
-// Status returned of serviceCallback
+// Status returned of RequestCallback
 const (
 	Success = iota
 	ClientError
 	ServiceError
 )
 
-// RequestResult is result of serviceCallback
+// RequestResult is result of RequestCallback
 type RequestResult struct {
 	State   State // Use status returned
 	Message string
 }
 
-// Result of serviceCallback
+// Result of RequestCallback
 type Result struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`

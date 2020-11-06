@@ -34,7 +34,7 @@ func StartCmd() *cobra.Command {
 
 			logger := common.Logger
 
-			appInstance := app.NewApp(serviceClient, {{service_name}}.ServiceCallback, logger)
+			appInstance := app.NewApp(serviceClient, {{service_name}}.RequestCallback, logger)
 			appInstance.Start()
 
 			return nil
