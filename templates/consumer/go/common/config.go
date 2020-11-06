@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	ConfigPath = utils.MustGetHomeDir() + "/.{{service_name}}-sp/config.yaml"
+	ConfigPath = utils.MustGetHomeDir() + ".{{service_name}}-sp/config.yaml"
 )
 
 // LoadYAMLConfig loads the YAML config file

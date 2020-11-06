@@ -6,6 +6,11 @@ service_name=$3
 schema=$4
 output_dir=$5
 
+if [ "$type" != "provider" ] && [ "$type" != "consumer" ];then
+  echo "Please enter correct type: consumer | provider."
+  exit 8
+fi
+
 if [ x"$lang" != x"go" ];then
   echo "only supported golang currently"
   exit 8
@@ -61,14 +66,6 @@ sed -i 's/{{service_name}}/'${service_name}'/g' root.go
 # Modify the service name in the start.go
 sed -i 's/{{service_name}}/'${service_name}'/g' start.go
 
-# Modify the service name in the callback_handler.go
-cd ../service
-sed -i 's/{{service_name}}/'${service_name}'/g' callback_handler.go
-
-# Modify the service name in the request_callback.go
-cd ../$service_name
-sed -i 's/{{service_name}}/'${service_name}'/g' request_callback.go
-
 # Modify the service name in the config.go
 cd ../common
 sed -i 's/{{service_name}}/'${service_name}'/g' config.go
@@ -80,6 +77,20 @@ sed -i 's/{{service_name}}/'${service_name}'/g' types.go
 # Modify the service name in the Makefile
 cd ..
 sed -i 's/{{service_name}}/'${service_name}'/g' Makefile
+
+if [ "$type" == "consumer" ];then
+  # Modify the service name in the test.go
+  cd cmd
+  sed -i 's/{{service_name}}/'${service_name}'/g' test.go
+
+  # Modify the service name in the response_callback.go
+  cd ../$service_name
+  sed -i 's/{{service_name}}/'${service_name}'/g' response_callback.go
+else
+  # Modify the service name in the request_callback.go
+  cd $service_name
+  sed -i 's/{{service_name}}/'${service_name}'/g' request_callback.go
+fi
 
 echo "Complete the modification."
 

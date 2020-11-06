@@ -31,6 +31,3 @@ type Response struct {
 	Header string `json:"header"`
 	Body   string `json:"body"`
 }
-
-type ServiceInput struct{}
-type ServiceOutput struct{}
