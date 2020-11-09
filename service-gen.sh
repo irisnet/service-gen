@@ -6,6 +6,7 @@ service_name=$3
 schema=$4
 output_dir=$5
 
+# Parameter processing
 if [ "$type" != "provider" ] && [ "$type" != "consumer" ];then
   echo "Please enter correct type: consumer | provider."
   exit 8
@@ -42,8 +43,13 @@ echo "Complete initialization."
 cd templates
 cd $type
 cd $lang
-mkdir $HOME/.$service_name-sp/
-cp config/config.yaml $HOME/.$service_name-sp/
+if [ "$type" == "provider" ];then
+  mkdir $HOME/.$service_name-sp/
+  cp config/config.yaml $HOME/.$service_name-sp/
+else
+  mkdir $HOME/.$service_name-sc/
+  cp config/config.yaml $HOME/.$service_name-sc/
+fi
 cp -r * $output_dir
 
 echo "Copy complete"
@@ -53,43 +59,43 @@ cd $output_dir
 rm -rf config
 
 # Modify folder name
-mv {{service_name}} $service_name
+mv servicename $service_name
 
 # Modify the service name in the app.go
 cd app
-sed -i 's/{{service_name}}/'${service_name}'/g' app.go
+sed -i 's/servicename/'${service_name}'/g' app.go
 
 # Modify the service name in the root.go
 cd ../cmd
-sed -i 's/{{service_name}}/'${service_name}'/g' root.go
+sed -i 's/servicename/'${service_name}'/g' root.go
 
 # Modify the service name in the start.go
-sed -i 's/{{service_name}}/'${service_name}'/g' start.go
+sed -i 's/servicename/'${service_name}'/g' start.go
 
 # Modify the service name in the config.go
 cd ../common
-sed -i 's/{{service_name}}/'${service_name}'/g' config.go
+sed -i 's/servicename/'${service_name}'/g' config.go
 
 # Modify the service name in the types.go
 cd ../types
-sed -i 's/{{service_name}}/'${service_name}'/g' types.go
+sed -i 's/servicename/'${service_name}'/g' types.go
 
 # Modify the service name in the Makefile
 cd ..
-sed -i 's/{{service_name}}/'${service_name}'/g' Makefile
+sed -i 's/servicename/'${service_name}'/g' Makefile
 
 if [ "$type" == "consumer" ];then
   # Modify the service name in the test.go
   cd cmd
-  sed -i 's/{{service_name}}/'${service_name}'/g' test.go
+  sed -i 's/servicename/'${service_name}'/g' test.go
 
   # Modify the service name in the response_callback.go
   cd ../$service_name
-  sed -i 's/{{service_name}}/'${service_name}'/g' response_callback.go
+  sed -i 's/servicename/'${service_name}'/g' response_callback.go
 else
   # Modify the service name in the request_callback.go
   cd $service_name
-  sed -i 's/{{service_name}}/'${service_name}'/g' request_callback.go
+  sed -i 's/servicename/'${service_name}'/g' request_callback.go
 fi
 
 echo "Complete the modification."

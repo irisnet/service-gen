@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/irisnet/service-gen/service"
-	"github.com/irisnet/service-gen/{{service_name}}"
+	"github.com/irisnet/service-gen/servicename"
 	"github.com/irisnet/service-gen/types"
 	log "github.com/sirupsen/logrus"
 )
@@ -22,7 +22,7 @@ func NewApp(
 ) App {
 	return App{
 		ServiceClient:   serviceClient,
-		RequestCallback: {{service_name}}.RequestCallback,
+		RequestCallback: servicename.RequestCallback,
 		Logger:          logger,
 	}
 }

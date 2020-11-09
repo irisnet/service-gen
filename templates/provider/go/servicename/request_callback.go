@@ -1,4 +1,4 @@
-package test
+package servicename
 
 import (
 	"encoding/json"
@@ -8,8 +8,8 @@ import (
 )
 
 // RequestCallback provider need to supplementary service logic
-func RequestCallback(reqID, input string) (output *types.TestServiceOutput, requestResult *types.RequestResult) {
-	serviceInput, err := ParseInput(input)
+func RequestCallback(reqID, input string) (output *types.ServiceOutput, requestResult *types.RequestResult) {
+	serviceInput, err := parseInput(input)
 	if err != nil {
 		requestResult = &types.RequestResult{
 			State:   types.ClientError,
@@ -19,9 +19,8 @@ func RequestCallback(reqID, input string) (output *types.TestServiceOutput, requ
 	}
 
 	_ = serviceInput
-	output = &types.TestServiceOutput{
-		Output: "wrold",
-	}
+	// Supplementary service logic...
+	output = &types.ServiceOutput{}
 	requestResult = &types.RequestResult{
 		State:   types.Success,
 		Message: "success",
@@ -29,8 +28,8 @@ func RequestCallback(reqID, input string) (output *types.TestServiceOutput, requ
 	return output, requestResult
 }
 
-// ParseInput ParseInput input
-func ParseInput(input string) (serviceInput *types.TestServiceInput, err error) {
+// parseInput ParseInput input
+func parseInput(input string) (serviceInput *types.ServiceInput, err error) {
 	input = gjson.Get(input, "body").String()
 
 	err = json.Unmarshal([]byte(input), &serviceInput)
