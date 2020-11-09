@@ -1,10 +1,8 @@
 package service
 
 import (
-	"os"
-	"path/filepath"
-
 	"github.com/irisnet/service-gen/common"
+	"github.com/irisnet/service-gen/utils"
 	"github.com/irisnet/service-sdk-go/types"
 	"github.com/spf13/viper"
 )
@@ -14,7 +12,7 @@ var (
 	defaultChainID       = "irita-hub"
 	defaultNodeRPCAddr   = "http://127.0.0.1:26657"
 	defaultNodeGRPCAddr  = "127.0.0.1:9090"
-	defaultKeyPath       = os.ExpandEnv(filepath.Join("$HOME", ".iritacli"))
+	defaultKeyPath       = utils.MustGetHomeDir() + ".iritacli"
 	defaultGas           = uint64(200000)
 	defaultFee           = "4point"
 	defaultBroadcastMode = types.Commit

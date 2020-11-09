@@ -10,8 +10,8 @@ import (
 // rootCmd is the entry point
 var (
 	rootCmd = &cobra.Command{
-		Use:   "servicename-sp",
-		Short: "servicename provider daemon command line interface",
+		Use:   "{{service_name}}-sp",
+		Short: "{{service_name}} provider daemon command line interface",
 	}
 )
 
