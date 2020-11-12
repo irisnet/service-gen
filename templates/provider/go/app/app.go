@@ -1,9 +1,12 @@
 package app
 
 import (
+	"fmt"
+
 	"github.com/irisnet/service-gen/service"
 	"github.com/irisnet/service-gen/{{service_name}}"
 	"github.com/irisnet/service-gen/types"
+	servicesdk "github.com/irisnet/service-sdk-go/service"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -30,11 +33,21 @@ func NewApp(
 // Start starts the provider process
 func (app App) Start() {
 	// Subscribe
-	err := app.ServiceClient.SubscribeServiceRequest(types.ServiceName, app.RequestCallback)
+	err := app.ServiceClient.SubscribeServiceRequest(app.RequestCallback)
 	if err != nil {
-		app.Logger.Errorf("failed to register service request listener, err: %s", err.Error())
+		app.Logger.Errorf("failed to subscribe service request listener, err: %s", err.Error())
 		return
 	}
 
 	select {}
+}
+
+// Bind provider
+func (app App) Bind(bindConfig servicesdk.BindServiceRequest) {
+	err := app.ServiceClient.BindService(bindConfig)
+	if err != nil {
+		fmt.Printf("failed to bind service request listener, err: %s \n", err.Error())
+		return
+	}
+	fmt.Println("Successfully bind service.")
 }

@@ -8,7 +8,10 @@ import (
 )
 
 // RequestCallback provider need to supplementary service logic
-func RequestCallback(reqID, input string) (output *types.ServiceOutput, requestResult *types.RequestResult) {
+func RequestCallback(reqID, input string) (
+	output *types.ServiceOutput,
+	requestResult *types.RequestResult,
+) {
 	serviceInput, err := parseInput(input)
 	if err != nil {
 		requestResult = &types.RequestResult{
@@ -17,9 +20,8 @@ func RequestCallback(reqID, input string) (output *types.ServiceOutput, requestR
 		}
 		return nil, requestResult
 	}
-
-	_ = serviceInput
 	// Supplementary service logic...
+	_ = serviceInput
 	output = &types.ServiceOutput{}
 	requestResult = &types.RequestResult{
 		State:   types.Success,
@@ -28,7 +30,6 @@ func RequestCallback(reqID, input string) (output *types.ServiceOutput, requestR
 	return output, requestResult
 }
 
-// parseInput ParseInput input
 func parseInput(input string) (serviceInput *types.ServiceInput, err error) {
 	input = gjson.Get(input, "body").String()
 

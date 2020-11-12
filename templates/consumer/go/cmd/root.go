@@ -10,8 +10,8 @@ import (
 // rootCmd is the entry point
 var (
 	rootCmd = &cobra.Command{
-		Use:   "{{service_name}}-sp",
-		Short: "provider daemon command line interface",
+		Use:   "{{service_name}}-sc",
+		Short: "{{service_name}} consumer daemon command line interface",
 	}
 )
 
@@ -20,7 +20,7 @@ func main() {
 
 	rootCmd.AddCommand(startCmd())
 	rootCmd.AddCommand(keysCmd)
-	rootCmd.AddCommand(bindCmd())
+	rootCmd.AddCommand(invokeCmd())
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

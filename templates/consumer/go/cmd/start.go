@@ -11,8 +11,8 @@ import (
 func startCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "start",
-		Short:   "Start provider daemon",
-		Example: `{{service_name}}-sp start [config-file]`,
+		Short:   "Start consumer daemon",
+		Example: `{{service_name}}-sc start [config-file]`,
 		Args:    cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			password := getPassword()
@@ -34,8 +34,13 @@ func startCmd() *cobra.Command {
 
 			logger := common.Logger
 
-			appInstance := app.NewApp(serviceClient, {{service_name}}.RequestCallback, logger)
-			appInstance.Start()
+			addr, err := serviceClient.ShowKey(serviceClient.KeyName, serviceClient.Password)
+			if err != nil {
+				return err
+			}
+
+			appInstance := app.NewApp(serviceClient, {{service_name}}.ResponseCallback, logger)
+			appInstance.Start(addr, {{service_name}}.ResponseCallback)
 
 			return nil
 		},
