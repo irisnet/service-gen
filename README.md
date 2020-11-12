@@ -75,6 +75,7 @@
       ```go
       func ResponseCallback(reqCtxID, reqID, output string) {
         serviceOutput := parseOutput(output)
+        common.Logger.Info(serviceOutput)
         // Supplementary service logic...
         fmt.Println(serviceOutput.Output)
       }
