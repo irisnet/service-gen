@@ -14,6 +14,7 @@ func RequestCallback(reqID, input string) (
 	requestResult *types.RequestResult,
 ) {
 	serviceInput, err := parseInput(input)
+	common.Logger.Info("Get request: \n", serviceOutput)
 	if err != nil {
 		requestResult = &types.RequestResult{
 			State:   types.ClientError,
