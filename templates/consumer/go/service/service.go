@@ -1,13 +1,14 @@
 package service
 
 import (
-	"github.com/irisnet/service-gen/common"
-	"github.com/irisnet/service-gen/types"
 	servicesdk "github.com/irisnet/service-sdk-go"
 	"github.com/irisnet/service-sdk-go/service"
 	sdkTypes "github.com/irisnet/service-sdk-go/types"
 	"github.com/irisnet/service-sdk-go/types/store"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/irisnet/service-gen/common"
+	"github.com/irisnet/service-gen/types"
 )
 
 // ServiceClientWrapper defines a wrapper for service client

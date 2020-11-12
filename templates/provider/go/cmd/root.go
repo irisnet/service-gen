@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// rootCmd is the entry point
+// rootCmd is the entry
 var (
 	rootCmd = &cobra.Command{
 		Use:   "{{service_name}}-sp",

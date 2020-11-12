@@ -1,31 +1,75 @@
 package main
 
 import (
-	"strconv"
-	"strings"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	flag "github.com/spf13/pflag"
+
+	servicesdk "github.com/irisnet/service-sdk-go/service"
+	sdkTypes "github.com/irisnet/service-sdk-go/types"
 
 	"github.com/irisnet/service-gen/app"
 	"github.com/irisnet/service-gen/common"
 	"github.com/irisnet/service-gen/service"
 	"github.com/irisnet/service-gen/{{service_name}}"
 	"github.com/irisnet/service-gen/types"
-	servicesdk "github.com/irisnet/service-sdk-go/service"
-	sdkTypes "github.com/irisnet/service-sdk-go/types"
-	"github.com/spf13/cobra"
+)
+
+const (
+	flagProviders = "providers"
+	flagFeeCap    = "fee-cap"
+	flagInput     = "input"
+	flagTimeout   = "timeout"
+	flagRepeated  = "repeated"
+	flagFrequency = "frequency"
+	flagTotal     = "total"
+	flagConfig    = "config"
 )
 
 func invokeCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "invoke",
-		Short:   "Invoke service",
-		Example: `{{service_name}}-sc invoke [provider-list] [fee-cap] [input] [timeout] [repeated] [frequency] [total] [config-file]`,
-		Args:    cobra.RangeArgs(3, 8),
+		Use:   "invoke",
+		Short: "Invoke service",
+		Example: `
+{{service_name}}-sc invoke [config-path] \
+	--providers iaa135p42vm5vxrk4rmryn6sqgusm4yqwxmqgm05tn \
+	--fee-cap 1 \
+	--input '{"header":{},"body":{"input":"hello"}}' \
+	--timeout 100 \
+	--repeated false \
+	--frequency 110 \
+	--total 1 \`,
+		Args:  cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			password := getPassword()
 
-			invokeConfig, configPath, err := parameterHandler(args)
-			if err != nil {
-				return err
+			providers := viper.GetStringSlice(flagProviders)
+			feeCap := viper.GetInt64(flagFeeCap)
+			input := viper.GetString(flagInput)
+			timeout := viper.GetInt64(flagTimeout)
+			repeated := viper.GetBool(flagRepeated)
+			frequency := viper.GetUint64(flagFrequency)
+			total := viper.GetInt64(flagTotal)
+
+			serviceFeeCap := sdkTypes.NewDecCoins(sdkTypes.NewDecCoin("stake", sdkTypes.NewInt(feeCap)))
+
+			invokeConfig := servicesdk.InvokeServiceRequest{
+				ServiceName:       types.ServiceName,
+				Providers:         providers,
+				ServiceFeeCap:     serviceFeeCap,
+				Input:             input,
+				Timeout:           timeout,
+				Repeated:          repeated,
+				RepeatedFrequency: frequency,
+				RepeatedTotal:     total,
+			}
+
+			var configPath string
+
+			if len(args) == 0 {
+				configPath = common.ConfigPath
+			} else {
+				configPath = args[0]
 			}
 
 			config, err := common.LoadYAMLConfig(configPath)
@@ -44,65 +88,25 @@ func invokeCmd() *cobra.Command {
 		},
 	}
 
+	cmd.Flags().AddFlagSet(fsInvoke)
+	
+	cmd.MarkFlagRequired(flagProviders)
+	cmd.MarkFlagRequired(flagFeeCap)
+	cmd.MarkFlagRequired(flagInput)
+
 	return cmd
 }
 
-func parameterHandler(args []string) (servicesdk.InvokeServiceRequest, string, error) {
-	providerList := strings.Split(args[0], "/")
+var (
+	fsInvoke = flag.NewFlagSet("", flag.ContinueOnError)
+)
 
-	feeCap, err := strconv.ParseInt(args[1], 10, 64)
-	if err != nil {
-		panic(err)
-	}
-	serviceFeeCap := sdkTypes.NewDecCoins(sdkTypes.NewDecCoin("point", sdkTypes.NewInt(feeCap)))
-
-	input := args[2]
-
-	invokeConfig := servicesdk.InvokeServiceRequest{
-		ServiceName:       types.ServiceName,
-		Providers:         providerList,
-		ServiceFeeCap:     serviceFeeCap,
-		Input:             input,
-		Timeout:           types.DefaultTimeout,
-		Repeated:          types.DefaultRepeated,
-		RepeatedFrequency: types.DefaultFrequency,
-		RepeatedTotal:     types.DefaultTotal,
-	}
-
-	configPath := common.ConfigPath
-
-	if len(args) == 4 || len(args) == 5 || len(args) == 6 || len(args) == 7 || len(args) == 8 {
-		invokeConfig.Timeout, err = strconv.ParseInt(args[3], 10, 64)
-		if err != nil {
-			panic(err)
-		}
-	}
-
-	if len(args) == 5 || len(args) == 6 || len(args) == 7 || len(args) == 8 {
-		invokeConfig.Repeated, err = strconv.ParseBool(args[4])
-		if err != nil {
-			panic(err)
-		}
-	}
-
-	if len(args) == 6 || len(args) == 7 || len(args) == 8 {
-		repeatedFrequency, err := strconv.Atoi(args[5])
-		if err != nil {
-			panic(err)
-		}
-		invokeConfig.RepeatedFrequency = uint64(repeatedFrequency)
-	}
-
-	if len(args) == 7 || len(args) == 8 {
-		invokeConfig.RepeatedTotal, err = strconv.ParseInt(args[6], 10, 64)
-		if err != nil {
-			panic(err)
-		}
-	}
-
-	if len(args) == 8 {
-		configPath = args[7]
-	}
-
-	return invokeConfig, configPath, nil
+func init() {
+	fsInvoke.StringSlice(flagProviders, nil, "Providers that you want to invoke(Use '/' to split).")
+	fsInvoke.Int64(flagFeeCap, 0, "fee cap")
+	fsInvoke.String(flagInput, "", "input")
+	fsInvoke.Int64(flagTimeout, types.DefaultTimeout, "timeout")
+	fsInvoke.Bool(flagRepeated, types.DefaultRepeated, "wheather repeat")
+	fsInvoke.Uint64(flagFrequency, types.DefaultFrequency, "frequency")
+	fsInvoke.Int64(flagTotal, types.DefaultTotal, "total invoke times")
 }

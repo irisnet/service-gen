@@ -3,8 +3,9 @@ package service
 import (
 	"encoding/json"
 
-	"github.com/irisnet/service-gen/types"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/irisnet/service-gen/types"
 )
 
 // CallbackHandler is processing function of RequestCallback

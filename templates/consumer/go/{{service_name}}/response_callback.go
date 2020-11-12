@@ -3,16 +3,16 @@ package {{service_name}}
 import (
 	"encoding/json"
 
+	"github.com/tidwall/gjson"
+
 	"github.com/irisnet/service-gen/common"
 	"github.com/irisnet/service-gen/types"
-	"github.com/tidwall/gjson"
 )
 
 // ResponseCallback provider need to supplementary service logic
 func ResponseCallback(reqCtxID, reqID, output string) {
 	serviceOutput := parseOutput(output)
-	common.Logger.Info("Successfully get the response.")
-	_ = serviceOutput
+	common.Logger.Info(serviceOutput)
 	// Supplementary service logic...
 
 }

@@ -5,9 +5,10 @@ import (
 	"io/ioutil"
 
 	gp "github.com/howeyc/gopass"
+	"github.com/spf13/cobra"
+
 	"github.com/irisnet/service-gen/common"
 	"github.com/irisnet/service-gen/service"
-	"github.com/spf13/cobra"
 )
 
 var (

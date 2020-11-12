@@ -7,11 +7,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// rootCmd is the entry point
+// rootCmd is the entry
 var (
 	rootCmd = &cobra.Command{
-		Use:   "{{service_name}}-sc",
-		Short: "{{service_name}} consumer daemon command line interface",
+		Use:   "{{service_name}}-sp",
+		Short: "provider daemon command line interface",
 	}
 )
 

@@ -3,8 +3,9 @@ package {{service_name}}
 import (
 	"encoding/json"
 
-	"github.com/irisnet/service-gen/types"
 	"github.com/tidwall/gjson"
+
+	"github.com/irisnet/service-gen/types"
 )
 
 // RequestCallback provider need to supplementary service logic
@@ -21,12 +22,7 @@ func RequestCallback(reqID, input string) (
 		return nil, requestResult
 	}
 	// Supplementary service logic...
-	_ = serviceInput
-	output = &types.ServiceOutput{}
-	requestResult = &types.RequestResult{
-		State:   types.Success,
-		Message: "success",
-	}
+
 	return output, requestResult
 }
 

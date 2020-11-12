@@ -3,14 +3,15 @@ package main
 import (
 	"strconv"
 
+	servicesdk "github.com/irisnet/service-sdk-go/service"
+	sdkTypes "github.com/irisnet/service-sdk-go/types"
+	"github.com/spf13/cobra"
+
 	"github.com/irisnet/service-gen/app"
 	"github.com/irisnet/service-gen/common"
 	"github.com/irisnet/service-gen/service"
 	"github.com/irisnet/service-gen/{{service_name}}"
 	"github.com/irisnet/service-gen/types"
-	servicesdk "github.com/irisnet/service-sdk-go/service"
-	sdkTypes "github.com/irisnet/service-sdk-go/types"
-	"github.com/spf13/cobra"
 )
 
 func bindCmd() *cobra.Command {
@@ -51,7 +52,7 @@ func parameterHandler(args []string) (servicesdk.BindServiceRequest, string, err
 	if err != nil {
 		panic(err)
 	}
-	deposit := sdkTypes.NewDecCoins(sdkTypes.NewDecCoin("point", sdkTypes.NewInt(i)))
+	deposit := sdkTypes.NewDecCoins(sdkTypes.NewDecCoin("stake", sdkTypes.NewInt(i)))
 
 	j, err := strconv.Atoi(args[2])
 	if err != nil {

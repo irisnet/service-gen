@@ -1,10 +1,11 @@
 package service
 
 import (
-	"github.com/irisnet/service-gen/common"
-	"github.com/irisnet/service-gen/utils"
 	"github.com/irisnet/service-sdk-go/types"
 	"github.com/spf13/viper"
+
+	"github.com/irisnet/service-gen/common"
+	"github.com/irisnet/service-gen/utils"
 )
 
 // default config variables
@@ -14,7 +15,7 @@ var (
 	defaultNodeGRPCAddr  = "127.0.0.1:9090"
 	defaultKeyPath       = utils.MustGetHomeDir() + "/.iritacli"
 	defaultGas           = uint64(200000)
-	defaultFee           = "4point"
+	defaultFee           = "4stake"
 	defaultBroadcastMode = types.Commit
 	defaultKeyAlgorithm  = "sm2"
 )

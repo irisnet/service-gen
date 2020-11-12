@@ -3,11 +3,12 @@ package app
 import (
 	"fmt"
 
+	servicesdk "github.com/irisnet/service-sdk-go/service"
+	log "github.com/sirupsen/logrus"
+
 	"github.com/irisnet/service-gen/service"
 	"github.com/irisnet/service-gen/{{service_name}}"
 	"github.com/irisnet/service-gen/types"
-	servicesdk "github.com/irisnet/service-sdk-go/service"
-	log "github.com/sirupsen/logrus"
 )
 
 // App represents the provider application
