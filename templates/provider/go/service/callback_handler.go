@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 
 	log "github.com/sirupsen/logrus"
 
@@ -60,19 +61,11 @@ func buildResAndOutput(
 	result = string(resBz)
 
 	if res.Code == 200 {
-		outputBz, err := json.Marshal(serviceOutput)
+		outputBz, err := json.Marshal(&serviceOutput)
 		if err != nil {
 			panic(err)
 		}
-		output := types.Response{
-			Header: "",
-			Body:   string(outputBz),
-		}
-		responseBz, err := json.Marshal(output)
-		if err != nil {
-			panic(err)
-		}
-		response = string(responseBz)
+		response = fmt.Sprintf(`{"header":{},"body":%s}`, string(outputBz))
 	}
 
 	return response, result

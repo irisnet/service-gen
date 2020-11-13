@@ -2,7 +2,6 @@ package service
 
 import (
 	servicesdk "github.com/irisnet/service-sdk-go"
-	"github.com/irisnet/service-sdk-go/service"
 	sdkTypes "github.com/irisnet/service-sdk-go/types"
 	"github.com/irisnet/service-sdk-go/types/store"
 	log "github.com/sirupsen/logrus"
@@ -103,11 +102,6 @@ func MakeServiceClientWrapper(config Config, password string) ServiceClientWrapp
 		config.KeyAlgorithm,
 		common.Logger,
 	)
-}
-
-func (s ServiceClientWrapper) BindService(bindServiceRequest service.BindServiceRequest) error {
-	_, err := s.ServiceClient.BindService(bindServiceRequest, s.buildBaseTx())
-	return err
 }
 
 // SubscribeServiceRequest wraps service.SubscribeServiceRequest

@@ -118,28 +118,26 @@ func (s ServiceClientWrapper) InvokeService(invokeConfig service.InvokeServiceRe
 
 // SubscribeServiceResponse wraps service.SubscribeServiceResponse
 func (s ServiceClientWrapper) SubscribeServiceResponse(
+	reqCtxID, reqID,
 	consumerAddr string,
 	responseCallback types.ResponseCallback,
 ) error {
 	builder := createFilter(consumerAddr)
 
 	callback := func(txs sdkTypes.EventDataTx) {
-		events := txs.Result.Events
-		reqCtxID, err := events.GetValue("message", "request_context_id")
-		if err != nil {
-			common.Logger.Info("fail to get value request_context_id", err)
-			return
+		for _, v := range txs.Result.Events {
+			if v.GetType() == "service_slash" {
+				common.Logger.Info("Illegal event detected")
+				return
+			}
 		}
-		reqID, err := events.GetValue("message", "request_id")
-		if err != nil {
-			common.Logger.Info("fail to get value request_id", err)
-			return
-		}
+
 		serviceResponseResponse, err := s.ServiceClient.QueryServiceResponse(reqID)
 		if err != nil {
-			common.Logger.Info("fail to find output", err)
+			common.Logger.Info("fail to query output", err)
 			return
 		}
+
 		responseCallback(reqCtxID, reqID, serviceResponseResponse.Output)
 	}
 

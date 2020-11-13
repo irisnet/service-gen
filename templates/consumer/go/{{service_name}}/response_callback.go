@@ -11,8 +11,8 @@ import (
 
 // ResponseCallback provider need to supplementary service logic
 func ResponseCallback(reqCtxID, reqID, output string) {
+	common.Logger.Infof("Get response: %+v\n", output)
 	serviceOutput := parseOutput(output)
-	common.Logger.Info("Get response: \n", serviceOutput)
 	// Supplementary service logic...
 
 }

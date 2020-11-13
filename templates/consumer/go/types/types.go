@@ -7,7 +7,7 @@ const (
 const (
 	DefaultTimeout   = 100
 	DefaultRepeated  = false
-	DefaultFrequency = 110
+	DefaultFrequency = 0
 	DefaultTotal     = 1
 )
 

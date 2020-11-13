@@ -1,6 +1,6 @@
 # Service-gen Help Documentation
 
-- This "Hello world" example uses "node0"(addr: iaa135p42vm5vxrk4rmryn6sqgusm4yqwxmqgm05tn) as the consumer and provider.
+- This "Hello world" example uses "node0"(addr: iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv) as the consumer and provider.
 
 ## 1.Generate code project.
 
@@ -55,6 +55,7 @@
     ###### 2.1.1 Export node0
 
       ```shell
+      iris testnet --v=1 --chain-id=iris -o=/home/sunny/iris
       iris keys export node0 --home /home/sunny/iris/node0/ iriscli
       ```
 
@@ -74,8 +75,8 @@
     - Example of golang
       ```go
       func ResponseCallback(reqCtxID, reqID, output string) {
+        common.Logger.Infof("Get response: %+v\n", output)
         serviceOutput := parseOutput(output)
-        common.Logger.Info(serviceOutput)
         // Supplementary service logic...
         fmt.Println(serviceOutput.Output)
       }
@@ -99,8 +100,9 @@
         }
         // Supplementary service logic...
         fmt.Println(serviceInput.Input)
+        var o string = "hello-world"
         output = &types.ServiceOutput{
-          Output: "hello-world",
+          Output: &o,
         }
         requestResult = &types.RequestResult{
           State:   types.Success,
@@ -142,8 +144,6 @@
 
 ## 3.Start irisnet.
   ```shell
-  iris testnet --v=1 --chain-id=iris -o=/home/sunny/iris
-
   iris start --home=/home/sunny/iris/node0/iris
   ```
 
@@ -165,82 +165,31 @@
 
 ## 5.Bind service
 
-  - You only need to do one of the following two operations.
-
-  - **consumer**
-    ```shell
-      iris tx service bind \
-        --service-name=hello \
-        --deposit=10000stake \
-        --pricing='{"price":"1stake"}' 
-        --qos=50 \
-        --from=node0 \
-        --chain-id=iris \
-        -b=block -y \
-        --home=/home/sunny/iris/node0/iriscli \
-        --options={} \
-        --fees 10stake \
-        --provider=iaa135p42vm5vxrk4rmryn6sqgusm4yqwxmqgm05tn \
-    ```
-
-  - **provider**
-    - Commond to bind service
-      | name | description |
-      | :-: | :-: |
-      | Deposit | Deposit of bind service |
-      | Pricing | Service fee |
-      | QoS | Service quality |
-      | Options | Other option |
-      | Provider | Provider who will be binded |
-    
-      ```shell
-      hello-sp bind 10000 '{"price":"1stake"}' 50 {} iaa135p42vm5vxrk4rmryn6sqgusm4yqwxmqgm05tn
-      ```
+  ```shell
+    iris tx service bind \
+      --service-name=hello \
+      --deposit=10000stake \
+      --pricing='{"price":"1stake"}' \
+      --qos=50 \
+      --from=node0 \
+      --chain-id=iris \
+      -b=block -y \
+      --home=/home/sunny/iris/node0/iriscli \
+      --options={} \
+      --fees 10stake \
+      --provider=iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv \
+  ```
 
 ## 6.Start consumer's subscribe response and provider's subscribe request.
-  - **consumer**
-    ```shell
-    hello-sc start
-    ```
-  
-  - **provider**
+  - **provider**(Subscribe service request first.)
     ```shell
     hello-sp start
     ```
 
-## 7.Invoke service
-  - You only need to do one of the following two operations.
-
-  - **consumer**
-    - Commond to invoke service
-      | name | description | default value |
-      | :-: | :-: | :-: |
-      | Provider | List of service providers(use '/' to separate) |  |
-      | ServiceFeeCap | Fee cap |  |
-      | Input | Input of invoke service |  |
-      | Timeout | Timeout limit | 100 |
-      | Repeated | Whether invoke repeatly | false |
-      | RepeatedFrequency | Repeated frequency | 110 |
-      | RepeatedTotal | Total repetitions | 1 |
-    
-      ```shell
-      hello-sc invoke \
-        iaa135p42vm5vxrk4rmryn6sqgusm4yqwxmqgm05tn \
-        1 '{"header":{},"body":{"input":"hello"}}' \
-        100 false 110 1 \
-      ```
-
-  - **provider**
+  - **consumer**(Invoke and subscribe service response.)
     ```shell
-    iris tx service call \
-      --service-name=hello \
-      --chain-id=iris \
-      --providers=iaa135p42vm5vxrk4rmryn6sqgusm4yqwxmqgm05tn \
-      --service-fee-cap=1stake \
-      --data='{"header":{},"body":{"input":"hello"}}' \
-      -y --timeout=100 \
-      --frequency=110 \
-      --from node0 \
-      --home=/home/sunny/iris/node0/iriscli \
-      --fees=4stake
+    hello-sc invoke \
+      --providers iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv \
+      --fee-cap 1 \
+      --input {"header":{},"body":{"input":"hello"}} \
     ```

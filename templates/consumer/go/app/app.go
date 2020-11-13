@@ -31,17 +31,16 @@ func NewApp(
 	}
 }
 
-// Start starts the provider process
-func (app App) Start(addr string, responseCallback types.ResponseCallback) {
+func (app App) subscribe(reqCtxID, reqID string, responseCallback types.ResponseCallback) {
 	addr, err := app.ServiceClient.ShowKey(app.ServiceClient.KeyName, app.ServiceClient.Password)
 	if err != nil {
 		app.Logger.Errorf("failed to register service request listener, err: %s", err.Error())
 		return
 	}
 	// Subscribe
-	err = app.ServiceClient.SubscribeServiceResponse(addr, responseCallback)
+	err = app.ServiceClient.SubscribeServiceResponse(reqCtxID, reqID, addr, app.ResponseCallback)
 	if err != nil {
-		app.Logger.Errorf("failed to subscribe service request listener, err: %s", err.Error())
+		app.Logger.Errorf("failed to subscribe service request, err: %s", err.Error())
 		return
 	}
 
@@ -52,10 +51,12 @@ func (app App) Start(addr string, responseCallback types.ResponseCallback) {
 func (app App) Invoke(invokeConfig servicesdk.InvokeServiceRequest) {
 	reqCtxID, reqID, err := app.ServiceClient.InvokeService(invokeConfig)
 	if err != nil {
-		fmt.Printf("failed to invoke service request listener, err: %s \n", err.Error())
+		app.Logger.Errorf("failed to invoke service request, err: %s \n", err.Error())
 		return
 	}
 	fmt.Println("Successfully invoke service.")
 	fmt.Println("reqCtxID:", reqCtxID)
 	fmt.Println("reqID:", reqID)
+
+	app.subscribe(reqCtxID, reqID, app.ResponseCallback)
 }

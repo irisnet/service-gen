@@ -6,6 +6,7 @@ import (
 	"github.com/tidwall/gjson"
 
 	"github.com/irisnet/service-gen/types"
+	"github.com/irisnet/service-gen/common"
 )
 
 // RequestCallback provider need to supplementary service logic
@@ -14,7 +15,7 @@ func RequestCallback(reqID, input string) (
 	requestResult *types.RequestResult,
 ) {
 	serviceInput, err := parseInput(input)
-	common.Logger.Info("Get request: \n", serviceOutput)
+	common.Logger.Info("Get request: \n", serviceInput)
 	if err != nil {
 		requestResult = &types.RequestResult{
 			State:   types.ClientError,

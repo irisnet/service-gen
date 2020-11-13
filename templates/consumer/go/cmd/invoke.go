@@ -2,16 +2,16 @@ package main
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	flag "github.com/spf13/pflag"
+	"github.com/spf13/viper"
 
 	servicesdk "github.com/irisnet/service-sdk-go/service"
 	sdkTypes "github.com/irisnet/service-sdk-go/types"
 
 	"github.com/irisnet/service-gen/app"
 	"github.com/irisnet/service-gen/common"
-	"github.com/irisnet/service-gen/service"
 	"github.com/irisnet/service-gen/{{service_name}}"
+	"github.com/irisnet/service-gen/service"
 	"github.com/irisnet/service-gen/types"
 )
 
@@ -23,7 +23,6 @@ const (
 	flagRepeated  = "repeated"
 	flagFrequency = "frequency"
 	flagTotal     = "total"
-	flagConfig    = "config"
 )
 
 func invokeCmd() *cobra.Command {
@@ -31,7 +30,7 @@ func invokeCmd() *cobra.Command {
 		Use:   "invoke",
 		Short: "Invoke service",
 		Example: `
-{{service_name}}-sc invoke [config-path] \
+hello-sc invoke [config-path] \
 	--providers iaa135p42vm5vxrk4rmryn6sqgusm4yqwxmqgm05tn \
 	--fee-cap 1 \
 	--input '{"header":{},"body":{"input":"hello"}}' \
@@ -39,7 +38,7 @@ func invokeCmd() *cobra.Command {
 	--repeated false \
 	--frequency 110 \
 	--total 1 \`,
-		Args:  cobra.MaximumNArgs(1),
+		Args: cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			password := getPassword()
 
@@ -51,7 +50,7 @@ func invokeCmd() *cobra.Command {
 			frequency := viper.GetUint64(flagFrequency)
 			total := viper.GetInt64(flagTotal)
 
-			serviceFeeCap := sdkTypes.NewDecCoins(sdkTypes.NewDecCoin("stake", sdkTypes.NewInt(feeCap)))
+			serviceFeeCap := sdkTypes.NewDecCoins(sdkTypes.NewDecCoin("point", sdkTypes.NewInt(int64(feeCap))))
 
 			invokeConfig := servicesdk.InvokeServiceRequest{
 				ServiceName:       types.ServiceName,
@@ -81,7 +80,7 @@ func invokeCmd() *cobra.Command {
 
 			logger := common.Logger
 
-			appInstance := app.NewApp(serviceClient, {{service_name}}.ResponseCallback, logger)
+			appInstance := app.NewApp(serviceClient, hello.ResponseCallback, logger)
 			appInstance.Invoke(invokeConfig)
 
 			return nil
@@ -89,7 +88,8 @@ func invokeCmd() *cobra.Command {
 	}
 
 	cmd.Flags().AddFlagSet(fsInvoke)
-	
+	viper.BindPFlags(fsInvoke)
+
 	cmd.MarkFlagRequired(flagProviders)
 	cmd.MarkFlagRequired(flagFeeCap)
 	cmd.MarkFlagRequired(flagInput)

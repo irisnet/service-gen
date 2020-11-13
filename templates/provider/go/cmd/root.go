@@ -20,7 +20,6 @@ func main() {
 
 	rootCmd.AddCommand(startCmd())
 	rootCmd.AddCommand(keysCmd)
-	rootCmd.AddCommand(bindCmd())
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
