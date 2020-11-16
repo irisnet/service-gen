@@ -36,8 +36,8 @@
     | output-dir | Generate path | ../output |  |
   - Example
     ```shell
-    ./service-gen.sh consumer go hello ../schemas.json ../consumer
-    ./service-gen.sh provider go hello ../schemas.json ../provider
+    node service-gen.js consumer go hello schemas.json ../consumer
+    node service-gen.js provider go hello schemas.json ../provider
     ```
 
 ## 2.Get ready

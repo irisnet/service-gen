@@ -80,7 +80,7 @@ hello-sc invoke [config-path] \
 
 			logger := common.Logger
 
-			appInstance := app.NewApp(serviceClient, hello.ResponseCallback, logger)
+			appInstance := app.NewApp(serviceClient, {{service_name}}.ResponseCallback, logger)
 			appInstance.Invoke(invokeConfig)
 
 			return nil
