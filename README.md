@@ -1,5 +1,7 @@
 # Service-gen Help Documentation
 
+- Codegen tool for service providers and consumers.
+
 - This "Hello world" example uses "node0"(addr: iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv) as the consumer and provider.
 
 ## 1.Generate code project.
@@ -29,15 +31,15 @@
   - Command to build the project: 
     | name | description | default value | parameter value |
     | :-: | :-: | :-: | :-: |
-    | type | Generate consumer's or provider's code | | consumer, provider |
+    | type | Generate consumer's or provider's code | | consumer(c) provider(p) |
     | lang | Select language | | go, java, js(Only support go for the time being) |
     | service-name | Service's name |  |  |
     | schemas | Path of schemas | ./schemas.json |  |
     | output-dir | Generate path | ../output |  |
   - Example
     ```shell
-    node service-gen.js consumer go hello schemas.json ../consumer
-    node service-gen.js provider go hello schemas.json ../provider
+    node service-gen.js --type c --lang go -s hello --schemas schemas.json -o ../consumer
+    node service-gen.js --type p --lang go -s hello --schemas schemas.json -o ../provider
     ```
 
 ## 2.Get ready

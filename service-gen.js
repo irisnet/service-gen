@@ -2,42 +2,47 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const shell = require('child_process');
+const utils = require("./utils.js");
+const cmd = require('commander');
+
+cmd
+  .version('0.1.0', '-v, --version')
+  .option('--type <string>', 'provider(p) or consumer(c)')
+  .option('--lang <string>', 'code language')
+  .option('-s, --service-name <string>', 'service and package name')
+  .option('--schemas [string]', 'path of jsonschema', './schemas.json')
+  .option('-o, --output [string]', 'path of output dir', './output')
+  .parse(process.argv);
 
 // 1 Receive parameters
-var arguments = process.argv
-var type = arguments[2]
-var lang = arguments[3]
-var service_name = arguments[4]
-var schemasPath = arguments[5]
-var output_dir = arguments[6]
+var type = cmd.type
+var lang = cmd.lang
+var service_name = cmd.serviceName
+var schemasPath = cmd.schemas
+var output_dir = cmd.output
 
 // Parameter shelling
+if (type == "p") type = "provider"
+if (type == "c") type = "consumer"
+
 if (type != "provider" && type != "consumer") {
-  throw new Error("Please enter correct type: consumer | provider.");
+  console.log("Please enter correct type: consumer | provider.");
+  return
 }
 
 if (lang != "go") {
-  throw new Error("only supported go currently.");
+  console.log("only supported go currently.");
+  return
 }
 
-if (service_name == "") {
-  throw "Please enter service name";
-}
-
-if (typeof (schemasPath) == "undefined") {
-  schemasPath = "./schemas.json"
-} else {
-  schemasPath = path.join(__dirname, schemasPath)
+if (typeof (service_name) == "undefined") {
+  console.log("Please enter service name");
+  return
 }
 
 if (fs.existsSync(schemasPath) == false) {
-  throw "Schemas not exist."
-}
-
-if (typeof (output_dir) == "undefined") {
-  output_dir = "./output"
-} else {
-  output_dir = path.join(__dirname, output_dir)
+  console.log("Schemas not exist.")
+  return
 }
 
 if (fs.existsSync(output_dir) == false) {
@@ -58,12 +63,12 @@ const schemas = require(schemasPath)
 console.log("Complete initialization.")
 
 // 2 Copy the specified template to the specified project path
-copyDir(template_path, output_dir);
+utils.CopyDir(template_path, output_dir);
 fs.unlinkSync(output_dir + "/config/config.yaml")
 fs.rmdirSync(output_dir + "/config")
 
 // Copy config
-copyDir(template_path + "/config", config_path)
+utils.CopyDir(template_path + "/config", config_path)
 
 console.log("Complete creating project.")
 
@@ -78,7 +83,7 @@ if (type == "consumer") {
 fs.rmdirSync(output_dir + "/{{service_name}}")
 
 // Modify the service name in the app.go
-replaceTemp(output_dir)
+utils.ReplaceTemp(output_dir, service_name)
 
 console.log("Complete template replacement.")
 
@@ -87,82 +92,17 @@ console.log("Complete template replacement.")
 fs.mkdirSync(output_dir + "/.temp")
 
 if (lang == "go") {
-  shell.execSync("go env -w GOPROXY=https://goproxy.cn")
-  shell.execSync("go get github.com/atombender/go-jsonschema/...")
-  shell.execSync("go build -o " + output_dir + "/.temp github.com/atombender/go-jsonschema/cmd/gojsonschema")
-
-  fs.writeFileSync(output_dir + "/.temp/ServiceInput.json", JSON.stringify(schemas.input))
-  fs.writeFileSync(output_dir + "/.temp/ServiceOutput.json", JSON.stringify(schemas.output))
-  shell.execSync(path.resolve(fs.realpathSync('.'), output_dir + "/.temp/gojsonschema -p types " + output_dir + "/.temp/ServiceInput.json >> " + output_dir + "/types/input.go"))
-  shell.execSync(path.resolve(fs.realpathSync('.'), output_dir + "/.temp/gojsonschema -p types " + output_dir + "/.temp/ServiceOutput.json >> " + output_dir + "/types/output.go"))
-  data = fs.readFileSync(output_dir + "/types/input.go")
-  data = data.toString().replace(new RegExp("ServiceInputJson", 'g'), "ServiceInput");
-  fs.writeFileSync(output_dir + "/types/input.go", data)
-  data = fs.readFileSync(output_dir + "/types/output.go")
-  data = data.toString().replace(new RegExp("ServiceOutputJson", 'g'), "ServiceOutput");
-  fs.writeFileSync(output_dir + "/types/output.go", data)
-  console.log("Complete parsing json.")
+  utils.GoParseJson(output_dir, schemas)
 }
+console.log("Complete parsing json.")
 
 // Remove temporary folder
-deleteDir(output_dir + "/.temp");
+utils.DeleteDir(output_dir + "/.temp");
 
 // 5 Installation project dependencies
 console.log("Installing project dependencies...")
 if (lang == "go") {
   // shell.execSync("cd " + output_dir)
   shell.execSync("cd " + output_dir + " && go mod tidy")
-} else if (lang == "java") {
-  console.log("java")
-} else {
-  console.log("js")
 }
 console.log("Complete installation project dependencies.")
-
-function copyDir(src, dst) {
-  if (fs.existsSync(dst) == false) {
-    fs.mkdirSync(dst);
-  }
-  if (fs.existsSync(src) == false) {
-    throw new Error("Path no exist: ", src)
-  }
-  var dirs = fs.readdirSync(src);
-  dirs.forEach(function (item) {
-    var item_path = path.join(src, item);
-    var temp = fs.statSync(item_path);
-    if (temp.isFile()) {
-      fs.copyFileSync(item_path, path.join(dst, item));
-    } else if (temp.isDirectory()) {
-      copyDir(item_path, path.join(dst, item));
-    }
-  });
-}
-
-function replaceTemp(url) {
-  let reg = new RegExp("{{service_name}}", 'g');
-  let files = fs.readdirSync(url);
-  files.forEach(function (file, index) {
-    const curUrl = path.join(url, file);
-    if (fs.statSync(curUrl).isDirectory()) {
-      replaceTemp(curUrl);
-    } else {
-      let data = fs.readFileSync(curUrl)
-      data = data.toString().replace(reg, service_name);
-      fs.writeFileSync(curUrl, data)
-    }
-  });
-}
-
-function deleteDir(url) {
-  let files = [];
-  files = fs.readdirSync(url);
-  files.forEach(function (file, index) {
-    const curPath = path.join(url, file);
-    if (fs.statSync(curPath).isDirectory()) {
-      deleteDir(curPath);
-    } else {
-      fs.unlinkSync(curPath);
-    }
-  });
-  fs.rmdirSync(url);
-}
