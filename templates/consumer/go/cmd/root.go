@@ -10,7 +10,7 @@ import (
 // rootCmd is the entry
 var (
 	rootCmd = &cobra.Command{
-		Use:   "{{service_name}}-sp",
+		Use:   "{{service_name}}-sc",
 		Short: "provider daemon command line interface",
 	}
 )
@@ -18,8 +18,8 @@ var (
 func main() {
 	cobra.EnableCommandSorting = false
 
-	rootCmd.AddCommand(startCmd())
 	rootCmd.AddCommand(keysCmd)
+	rootCmd.AddCommand(invokeCmd())
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

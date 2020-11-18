@@ -3,13 +3,19 @@ package {{service_name}}
 import (
 	"encoding/json"
 
-	"github.com/irisnet/service-gen/types"
 	"github.com/tidwall/gjson"
+
+	"github.com/irisnet/service-gen/types"
+	"github.com/irisnet/service-gen/common"
 )
 
 // RequestCallback provider need to supplementary service logic
-func RequestCallback(reqID, input string) (output *types.ServiceOutput, requestResult *types.RequestResult) {
+func RequestCallback(reqID, input string) (
+	output *types.ServiceOutput,
+	requestResult *types.RequestResult,
+) {
 	serviceInput, err := parseInput(input)
+	common.Logger.Info("Get request: \n", serviceInput)
 	if err != nil {
 		requestResult = &types.RequestResult{
 			State:   types.ClientError,
@@ -17,18 +23,11 @@ func RequestCallback(reqID, input string) (output *types.ServiceOutput, requestR
 		}
 		return nil, requestResult
 	}
-
-	_ = serviceInput
 	// Supplementary service logic...
-	output = &types.ServiceOutput{}
-	requestResult = &types.RequestResult{
-		State:   types.Success,
-		Message: "success",
-	}
+
 	return output, requestResult
 }
 
-// parseInput ParseInput input
 func parseInput(input string) (serviceInput *types.ServiceInput, err error) {
 	input = gjson.Get(input, "body").String()
 

@@ -2,6 +2,7 @@ package service
 
 import (
 	servicesdk "github.com/irisnet/service-sdk-go"
+	"github.com/irisnet/service-sdk-go/service"
 	sdkTypes "github.com/irisnet/service-sdk-go/types"
 	"github.com/irisnet/service-sdk-go/types/store"
 	log "github.com/sirupsen/logrus"
@@ -70,9 +71,9 @@ func NewServiceClientWrapper(
 		ChainID:  chainID,
 		Gas:      defaultGas,
 		Fee:      fee,
-		KeyDAO:   store.NewFileDAO(keyPath),
-		Algo:     keyAlgorithm,
 		Mode:     defaultBroadcastMode,
+		Algo:     keyAlgorithm,
+		KeyDAO:   store.NewFileDAO(keyPath),
 	}
 
 	wrapper := ServiceClientWrapper{
@@ -104,12 +105,43 @@ func MakeServiceClientWrapper(config Config, password string) ServiceClientWrapp
 	)
 }
 
-// SubscribeServiceRequest wraps service.SubscribeServiceRequest
-func (s ServiceClientWrapper) SubscribeServiceRequest(RequestCb types.RequestCallback) error {
-	callback := func(reqCtxID, reqID, input string) (output, result string) {
-		return CallbackHandler(reqID, input, RequestCb, s.Logger)
+// InvokeService wraps service.InvokeService
+func (s ServiceClientWrapper) InvokeService(invokeConfig service.InvokeServiceRequest) (string, string, error) {
+	reqCtxID, err := s.ServiceClient.InvokeService(invokeConfig, s.buildBaseTx())
+	if err != nil {
+		return "", "", err
 	}
-	_, err := s.ServiceClient.SubscribeServiceRequest(types.ServiceName, callback, s.buildBaseTx())
+	QueryServiceRequestResponse, err := s.ServiceClient.QueryRequestsByReqCtx(reqCtxID, 1)
+	reqID := QueryServiceRequestResponse[0].ID
+	return reqCtxID, reqID, err
+}
+
+// SubscribeServiceResponse wraps service.SubscribeServiceResponse
+func (s ServiceClientWrapper) SubscribeServiceResponse(
+	reqCtxID, reqID,
+	consumerAddr string,
+	responseCallback types.ResponseCallback,
+) error {
+	builder := createFilter(consumerAddr)
+
+	callback := func(txs sdkTypes.EventDataTx) {
+		for _, v := range txs.Result.Events {
+			if v.GetType() == "service_slash" {
+				common.Logger.Info("Illegal event detected")
+				return
+			}
+		}
+
+		serviceResponseResponse, err := s.ServiceClient.QueryServiceResponse(reqID)
+		if err != nil {
+			common.Logger.Info("fail to query output", err)
+			return
+		}
+
+		responseCallback(reqCtxID, reqID, serviceResponseResponse.Output)
+	}
+
+	_, err := s.ServiceClient.SubscribeTx(builder, callback)
 	return err
 }
 
@@ -119,4 +151,28 @@ func (s ServiceClientWrapper) buildBaseTx() sdkTypes.BaseTx {
 		From:     s.KeyName,
 		Password: s.Password,
 	}
+}
+
+func createFilter(consumerAddr string) (builder *sdkTypes.EventQueryBuilder) {
+	return sdkTypes.NewEventQueryBuilder().AddCondition(
+		sdkTypes.NewCond(
+			sdkTypes.EventTypeMessage,
+			"action",
+		).EQ(
+			sdkTypes.EventValue("respond_service"),
+		),
+	).AddCondition(sdkTypes.NewCond(
+		sdkTypes.EventTypeMessage,
+		"service_name",
+	).EQ(
+		sdkTypes.EventValue(types.ServiceName),
+	),
+	).AddCondition(
+		sdkTypes.NewCond(
+			sdkTypes.EventTypeMessage,
+			"consumer",
+		).EQ(
+			sdkTypes.EventValue(consumerAddr),
+		),
+	)
 }

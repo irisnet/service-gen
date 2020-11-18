@@ -2,28 +2,37 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/irisnet/service-gen/types"
-	log "github.com/sirupsen/logrus"
 )
 
-// CallbackHandler RequestCallback processing function
-var CallbackHandler = func(reqID, input string, requestCb types.RequestCallback, logger *log.Logger) (response, result string) {
-	// Receiving RequestCallback processing results
-	serviceOutput, requestResult := requestCb(reqID, input)
+// CallbackHandler is processing function of RequestCallback
+var CallbackHandler = func(
+	reqID string,
+	input string,
+	requestCallback types.RequestCallback,
+	logger *log.Logger,
+) (string, string) {
+	// Receiving processing results of RequestCallback
+	serviceOutput, requestResult := requestCallback(reqID, input)
 
-	// Convert the requestresult to the corresponding error code
-	res := resultConvert(requestResult)
+	// Convert the requestResult to the corresponding error code
+	res := convertRequestResult(requestResult)
 
-	return marshalResAndOutput(res, serviceOutput, logger)
+	response, result := buildResAndOutput(res, serviceOutput)
+	logger.Infof("request processed, result: %s, response: %s", result, response)
+	return response, result
 }
 
 // Convert the requestresult to the corresponding error code
-func resultConvert(requestResult *types.RequestResult) *types.Result {
+func convertRequestResult(requestResult *types.RequestResult) *types.Result {
 	res := types.Result{}
 	if requestResult == nil {
 		res.Code = 500
-		res.Message = "The response result is empty."
+		res.Message = "RequestResult is empty."
 		return &res
 	}
 
@@ -41,7 +50,10 @@ func resultConvert(requestResult *types.RequestResult) *types.Result {
 	return &res
 }
 
-func marshalResAndOutput(res *types.Result, serviceOutput *types.ServiceOutput, logger *log.Logger) (response, result string) {
+func buildResAndOutput(
+	res *types.Result,
+	serviceOutput *types.ServiceOutput,
+) (response, result string) {
 	resBz, err := json.Marshal(res)
 	if err != nil {
 		panic(err)
@@ -49,22 +61,12 @@ func marshalResAndOutput(res *types.Result, serviceOutput *types.ServiceOutput, 
 	result = string(resBz)
 
 	if res.Code == 200 {
-		outputBz, err := json.Marshal(serviceOutput)
+		outputBz, err := json.Marshal(&serviceOutput)
 		if err != nil {
 			panic(err)
 		}
-		output := types.Response{
-			Header: "",
-			Body:   string(outputBz),
-		}
-		responseBz, err := json.Marshal(output)
-		if err != nil {
-			panic(err)
-		}
-		response = string(responseBz)
+		response = fmt.Sprintf(`{"header":{},"body":%s}`, string(outputBz))
 	}
-
-	logger.Infof("request processed, result: %s, response: %s", result, response)
 
 	return response, result
 }

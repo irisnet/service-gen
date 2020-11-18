@@ -13,31 +13,42 @@ if [ "$type" != "provider" ] && [ "$type" != "consumer" ];then
 fi
 
 if [ x"$lang" != x"go" ];then
-  echo "only supported golang currently"
+  echo "Only supported golang currently."
   exit 8
 fi
 
-# Record genTool.sh's absolute path
-genToolPath=$(pwd)
+if [ ! $4 ];then
+  schema="./schemas.json"
+fi
+
+if [ ! $5 ];then
+  output_dir="./output"
+fi
+
+# Record service-gen.sh's absolute path
+service_gen_path=$(pwd)
 
 # Record schema's absolute path
 cd ${schema%/*}
 schema=${schema##*/}
 schema_path=$(pwd)
-cd $genToolPath
+cd $service_gen_path
 
 # Record output_dir's absolute path
 if [ "${output_dir##*/}" = "" ];then
   cd $output_dir
-else
+elif [[ $output_dir =~ "/" ]];then
   cd ${output_dir%/*}
+  mkdir ${output_dir##*/}
+  cd ${output_dir##*/}
+else
   mkdir ${output_dir##*/}
   cd ${output_dir##*/}
 fi
 output_dir=$(pwd)
-cd $genToolPath
+cd $service_gen_path
 
-echo "Complete initialization."
+echo "Complete path record."
 
 # 2 Copy the specified template to the specified project path
 cd templates
@@ -85,17 +96,21 @@ cd ..
 sed -i 's/{{service_name}}/'${service_name}'/g' Makefile
 
 if [ "$type" == "consumer" ];then
-  # Modify the service name in the test.go
-  cd cmd
-  sed -i 's/{{service_name}}/'${service_name}'/g' test.go
-
   # Modify the service name in the response_callback.go
-  cd ../$service_name
+  cd $service_name
   sed -i 's/{{service_name}}/'${service_name}'/g' response_callback.go
+
+  # Modify the service name in the invoke.go
+  cd ../cmd
+  sed -i 's/{{service_name}}/'${service_name}'/g' invoke.go
 else
   # Modify the service name in the request_callback.go
   cd $service_name
   sed -i 's/{{service_name}}/'${service_name}'/g' request_callback.go
+
+  # Modify the service name in the bind.go
+  cd ../cmd
+  sed -i 's/{{service_name}}/'${service_name}'/g' bind.go
 fi
 
 echo "Complete the modification."
