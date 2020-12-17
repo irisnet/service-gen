@@ -6,7 +6,7 @@
 
 - Dependencies:
   - go project: nodejs & go
-  - java project: nodejs & java &maven
+  - java project: nodejs & java
 
 - This "Hello world" example uses "node0"(addr: iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv) as the consumer and provider.
 
