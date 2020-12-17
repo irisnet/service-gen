@@ -1,4 +1,3 @@
-const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const shell = require('child_process');
@@ -21,7 +20,6 @@ var service_name = cmd.serviceName
 var schemasPath = cmd.schemas
 var output_dir = cmd.output
 
-// Parameter shelling
 if (type == "p") type = "provider"
 if (type == "c") type = "consumer"
 
@@ -30,8 +28,8 @@ if (type != "provider" && type != "consumer") {
   return
 }
 
-if (lang != "go") {
-  console.log("only supported go currently.");
+if (lang != "go" && lang != "java" && lang != "js") {
+  console.log("Only support go, java, js.");
   return
 }
 
@@ -46,17 +44,17 @@ if (fs.existsSync(schemasPath) == false) {
 }
 
 if (fs.existsSync(output_dir) == false) {
-  fs.mkdirSync(output_dir);
+  fs.mkdirSync(output_dir)
 }
 
 // Record template path
-const template_path = fs.realpathSync('.') + "/templates/" + type + "/" + lang;
+let template_path = fs.realpathSync('.') + "/templates/" + type + "/" + lang
 // Record config path
 let config_path
 if (type == "consumer") {
-  config_path = os.homedir() + "/." + service_name + "-sc"
+  config_path = os.homedir() + "/." + service_name + "-sc/"
 } else {
-  config_path = os.homedir() + "/." + service_name + "-sp"
+  config_path = os.homedir() + "/." + service_name + "-sp/"
 }
 // Record schemas path
 const schemas = require(schemasPath)
@@ -64,28 +62,31 @@ console.log("Complete initialization.")
 
 // 2 Copy the specified template to the specified project path
 utils.CopyDir(template_path, output_dir);
-fs.unlinkSync(output_dir + "/config/config.yaml")
-fs.rmdirSync(output_dir + "/config")
-
-// Copy config
-utils.CopyDir(template_path + "/config", config_path)
-
-console.log("Complete creating project.")
 
 // 3 Modify template variables
 // Modify folder name
-fs.mkdirSync(output_dir + "/" + service_name)
-if (type == "consumer") {
-  fs.renameSync(output_dir + "/{{service_name}}/response_callback.go", output_dir + "/" + service_name + "/response_callback.go")
-} else {
-  fs.renameSync(output_dir + "/{{service_name}}/request_callback.go", output_dir + "/" + service_name + "/request_callback.go")
+if (lang == "go") {
+  utils.DeleteDir(output_dir + "/config")
+  utils.CopyDir(template_path + "/config", config_path)
+  fs.mkdirSync(output_dir + "/" + service_name)
+  if (type == "consumer") {
+    fs.renameSync(output_dir + "/{{service_name}}/response_callback.go", output_dir + "/" + service_name + "/response_callback.go")
+  } else {
+    fs.renameSync(output_dir + "/{{service_name}}/request_callback.go", output_dir + "/" + service_name + "/request_callback.go")
+  }
+  fs.rmdirSync(output_dir + "/{{service_name}}")
+} else if (lang == "java") {
+  utils.DeleteDir(output_dir + "/src/main/java/service/" + type + "/config")
+  utils.CopyDir(template_path + "/src/main/java/service/" + type + "/config", config_path)
+  fs.mkdirSync(output_dir + "/src/main/java/service/" + type + "/" + service_name)
+  fs.renameSync(output_dir + "/src/main/java/service/" + type + "/service_name/CallbackImpl.java", output_dir + "/src/main/java/service/" + type + "/" + service_name + "/CallbackImpl.java")
+  fs.rmdirSync(output_dir + "/src/main/java/service/" + type + "/service_name")
 }
-fs.rmdirSync(output_dir + "/{{service_name}}")
 
 // Modify the service name in the app.go
 utils.ReplaceTemp(output_dir, service_name)
 
-console.log("Complete template replacement.")
+console.log("Complete copying config and replacing template.")
 
 // 4 Install converter, read schema.json, convert to the corresponding language structure
 // Create temporary folder
@@ -93,6 +94,8 @@ fs.mkdirSync(output_dir + "/.temp")
 
 if (lang == "go") {
   utils.GoParseJson(output_dir, schemas)
+} else if (lang == "java") {
+  utils.JavaParseJson(output_dir, schemas, type)
 }
 console.log("Complete parsing json.")
 

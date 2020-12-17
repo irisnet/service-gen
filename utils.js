@@ -7,7 +7,8 @@ function CopyDir(src, dst) {
     fs.mkdirSync(dst);
   }
   if (fs.existsSync(src) == false) {
-    throw new Error("Path no exist: ", src)
+    console.log("Path not exist: ", src)
+    return
   }
   var dirs = fs.readdirSync(src);
   dirs.forEach(function (item) {
@@ -71,7 +72,19 @@ function GoParseJson(output_dir, schemas) {
   fs.writeFileSync(output_dir + "/types/output.go", data)
 }
 
+function JavaParseJson(output_dir, schemas, type) {
+  shell.execSync("curl -L https://github.com/joelittlejohn/jsonschema2pojo/releases/download/jsonschema2pojo-1.0.2/jsonschema2pojo-1.0.2.tar.gz " + "-o " + output_dir + "/.temp/jsonschema2pojo-1.0.2.tar.gz")
+  shell.execSync("tar -zxf " + output_dir + "/.temp/jsonschema2pojo-1.0.2.tar.gz -C " + output_dir + "/.temp/")
+
+  fs.writeFileSync(output_dir + "/.temp/ServiceInput.json", JSON.stringify(schemas.input))
+  fs.writeFileSync(output_dir + "/.temp/ServiceOutput.json", JSON.stringify(schemas.output))
+
+  shell.execSync(path.resolve(fs.realpathSync('.'), output_dir + "/.temp/jsonschema2pojo-1.0.2/bin/jsonschema2pojo --source " + output_dir + "/.temp/ServiceInput.json" + " -tv 1.8 -p service." + type + ".types -t " + output_dir + "/src/main/java/"))
+  shell.execSync(path.resolve(fs.realpathSync('.'), output_dir + "/.temp/jsonschema2pojo-1.0.2/bin/jsonschema2pojo --source " + output_dir + "/.temp/ServiceOutput.json" + " -tv 1.8 -p service." + type + ".types -t " + output_dir + "/src/main/java/"))
+}
+
 exports.CopyDir = CopyDir
 exports.ReplaceTemp = ReplaceTemp
 exports.DeleteDir = DeleteDir
 exports.GoParseJson = GoParseJson
+exports.JavaParseJson = JavaParseJson
