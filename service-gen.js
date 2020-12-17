@@ -79,8 +79,8 @@ if (lang == "go") {
   utils.DeleteDir(output_dir + "/src/main/java/service/" + type + "/config")
   utils.CopyDir(template_path + "/src/main/java/service/" + type + "/config", config_path)
   fs.mkdirSync(output_dir + "/src/main/java/service/" + type + "/" + service_name)
-  fs.renameSync(output_dir + "/src/main/java/service/" + type + "/service_name/CallbackImpl.java", output_dir + "/src/main/java/service/" + type + "/" + service_name + "/CallbackImpl.java")
-  fs.rmdirSync(output_dir + "/src/main/java/service/" + type + "/service_name")
+  fs.renameSync(output_dir + "/src/main/java/service/" + type + "/{{service_name}}/CallbackImpl.java", output_dir + "/src/main/java/service/" + type + "/" + service_name + "/CallbackImpl.java")
+  fs.rmdirSync(output_dir + "/src/main/java/service/" + type + "/{{service_name}}")
 }
 
 // Modify the service name in the app.go
