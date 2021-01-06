@@ -85,7 +85,7 @@
             Specify the path of the file in config.yaml.
 
   #### 3.2 Callback function
-  - You need to be in the hello folder under the generated code directory, there is a file response_callback.
+  - The files that need to be modified are on the floder hello.
 
   - **consumer**
     - Example of go
