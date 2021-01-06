@@ -8,12 +8,15 @@ import java.util.List;
 
 import iservice.sdk.entity.BaseServiceRequest;
 import iservice.sdk.entity.Header;
+import iservice.sdk.entity.options.TxOptions;
 
 import service.consumer.common.Config;
 
 public class ServiceRequest extends BaseServiceRequest<ServiceInput> {
   public Header header;
   public ServiceInput body;
+
+  public TxOptions.Fee fee;
 
   public String keyName;
   public String password;
@@ -24,6 +27,10 @@ public class ServiceRequest extends BaseServiceRequest<ServiceInput> {
     this.password = password;
     this.header = header;
     this.body = body;
+  }
+
+  public void setFee(TxOptions.Fee fee) {
+    this.fee = fee;
   }
 
   @Override
@@ -48,7 +55,7 @@ public class ServiceRequest extends BaseServiceRequest<ServiceInput> {
 
   @Override
   public List<CoinOuterClass.Coin> getServiceFeeCap() {
-    return Lists.newArrayList(CoinOuterClass.Coin.newBuilder().setAmount("10").setDenom("stake").build());
+    return Lists.newArrayList(CoinOuterClass.Coin.newBuilder().setAmount(this.fee.amount).setDenom(this.fee.denom).build());
   }
 
   public void addProvider(String provider) {

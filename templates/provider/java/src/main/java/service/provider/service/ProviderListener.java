@@ -3,15 +3,15 @@ package service.provider.service;
 import iservice.sdk.core.AbstractProviderListener;
 import iservice.sdk.entity.options.ProviderListenerOptions;
 
-import service.provider.common.Config;
 import service.provider.types.ServiceInput;
 import service.provider.types.ServiceOutput;
+import service.provider.common.Config;
 import service.provider.types.ServiceResponse;
 
 public class ProviderListener extends AbstractProviderListener<ServiceInput, ServiceOutput, ServiceResponse> {
 
-	ProviderListenerOptions options;
-	ICallback iCallback;
+	public ProviderListenerOptions options;
+	public ICallback iCallback;
 
 	public void setOptions(String addr) {
 		options = new ProviderListenerOptions();
@@ -19,13 +19,13 @@ public class ProviderListener extends AbstractProviderListener<ServiceInput, Ser
 		options.setAddress(addr);
 	}
 
-	public void setICallback(ICallback iCallback) {
-		this.iCallback = iCallback;
-	}
-
 	@Override
 	public ProviderListenerOptions getOptions() {
 		return options;
+	}
+
+	public void setICallback(ICallback iCallback) {
+		this.iCallback = iCallback;
 	}
 
 	@Override
@@ -35,7 +35,6 @@ public class ProviderListener extends AbstractProviderListener<ServiceInput, Ser
 
 	@Override
 	public ServiceResponse onRequest(ServiceInput req) {
-		ServiceResponse res = iCallback.onRequest(req);
-		return res;
+		return this.iCallback.onRequest(req);
 	}
 }

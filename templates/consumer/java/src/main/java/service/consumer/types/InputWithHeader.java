@@ -6,7 +6,7 @@ public class InputWithHeader {
   Header header;
   ServiceInput body;
 
-  public Header getHerder() {
+  public Header getHeader() {
     return header;
   }
 

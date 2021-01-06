@@ -1,10 +1,8 @@
 # service config
-chain_id: irita
-node_rpc_addr: http://172.18.68.139:26657
-node_grpc_addr: http://172.18.68.139:9090
+chain_id: iris
+node_rpc_addr: http://172.18.20.99:26657
+node_grpc_addr: http://172.18.20.99:9090
 key_name: sc
-key_path: /mnt/d/gocode/src/now/sp.txt
-address: iaa16jpyj6vjgmtstm4tztw4n6rc3e9q56j54629t4
-sender: iaa1mxatp6h7huukny9uha8u45qkfas2f6lgpa4nhw
-fee: 4stake
+key_path: .key
+fee: 4point
 key_algorithm: SM2

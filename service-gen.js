@@ -1,6 +1,5 @@
 const fs = require('fs');
 const os = require('os');
-const shell = require('child_process');
 const utils = require("./utils.js");
 const cmd = require('commander');
 
@@ -61,7 +60,12 @@ const schemas = require(schemasPath)
 console.log("Complete initialization.")
 
 // 2 Copy the specified template to the specified project path
-utils.CopyDir(template_path, output_dir);
+utils.CopyDir(template_path, output_dir)
+if (lang === "java") {
+  utils.DeleteDir(output_dir + "/lib")
+  fs.mkdirSync(output_dir + "/lib")
+  utils.copyFile(template_path + "/lib/service-sdk-1.0-SNAPSHOT-jar-with-dependencies.jar", output_dir + "/lib/service-sdk-1.0-SNAPSHOT-jar-with-dependencies.jar")
+}
 
 // 3 Modify template variables
 // Modify folder name
@@ -102,10 +106,4 @@ console.log("Complete parsing json.")
 // Remove temporary folder
 utils.DeleteDir(output_dir + "/.temp");
 
-// 5 Installation project dependencies
-console.log("Installing project dependencies...")
-if (lang == "go") {
-  // shell.execSync("cd " + output_dir)
-  shell.execSync("cd " + output_dir + " && go mod tidy")
-}
 console.log("Complete installation project dependencies.")

@@ -2,24 +2,37 @@ const fs = require('fs')
 const path = require('path')
 const shell = require('child_process')
 
-function CopyDir(src, dst) {
-  if (fs.existsSync(dst) == false) {
-    fs.mkdirSync(dst);
-  }
-  if (fs.existsSync(src) == false) {
-    console.log("Path not exist: ", src)
-    return
-  }
-  var dirs = fs.readdirSync(src);
-  dirs.forEach(function (item) {
-    var item_path = path.join(src, item);
-    var temp = fs.statSync(item_path);
-    if (temp.isFile()) {
-      fs.copyFileSync(item_path, path.join(dst, item));
-    } else if (temp.isDirectory()) {
-      CopyDir(item_path, path.join(dst, item));
+function mkdirsSync(dirname) {  
+  if (fs.existsSync(dirname)) {  
+    return true;
+  } else {  
+      if (mkdirsSync(path.dirname(dirname))) {  
+          fs.mkdirSync(dirname);
+          return true;
+      }  
+  }  
+}
+
+function _copy(src, dist) {
+  var paths = fs.readdirSync(src)
+  paths.forEach(function(p) {
+    var _src = src + '/' +p;
+    var _dist = dist + '/' +p;
+    var stat = fs.statSync(_src)
+    if(stat.isFile()) {
+      fs.writeFileSync(_dist, fs.readFileSync(_src));
+    } else if(stat.isDirectory()) {
+      CopyDir(_src, _dist)
     }
-  });
+  })
+}
+
+function CopyDir(src,dist){
+  var b = fs.existsSync(dist)
+  if(!b){
+    mkdirsSync(dist);
+  }
+  _copy(src,dist);
 }
 
 function ReplaceTemp(url, service_name) {
@@ -52,10 +65,9 @@ function DeleteDir(url) {
 }
 
 function GoParseJson(output_dir, schemas) {
-  shell.execSync("go env -w GOPROXY=https://goproxy.cn")
+  console.log("downloading go-jsonschema...")
   shell.execSync("go get github.com/atombender/go-jsonschema/...")
   shell.execSync("go build -o " + output_dir + "/.temp github.com/atombender/go-jsonschema/cmd/gojsonschema")
-
 
   fs.writeFileSync(output_dir + "/.temp/ServiceInput.json", JSON.stringify(schemas.input))
   fs.writeFileSync(output_dir + "/.temp/ServiceOutput.json", JSON.stringify(schemas.output))
@@ -73,6 +85,7 @@ function GoParseJson(output_dir, schemas) {
 }
 
 function JavaParseJson(output_dir, schemas, type) {
+  console.log("downloading jsonschema2pojo...")
   shell.execSync("curl -L https://github.com/joelittlejohn/jsonschema2pojo/releases/download/jsonschema2pojo-1.0.2/jsonschema2pojo-1.0.2.tar.gz " + "-o " + output_dir + "/.temp/jsonschema2pojo-1.0.2.tar.gz")
   shell.execSync("tar -zxf " + output_dir + "/.temp/jsonschema2pojo-1.0.2.tar.gz -C " + output_dir + "/.temp/")
 
@@ -83,6 +96,30 @@ function JavaParseJson(output_dir, schemas, type) {
   shell.execSync(path.resolve(fs.realpathSync('.'), output_dir + "/.temp/jsonschema2pojo-1.0.2/bin/jsonschema2pojo --source " + output_dir + "/.temp/ServiceOutput.json" + " -tv 1.8 -p service." + type + ".types -t " + output_dir + "/src/main/java/"))
 }
 
+var copyFile = function(srcPath, tarPath, cb) {
+  var rs = fs.createReadStream(srcPath)
+  rs.on('error', function(err) {
+    if (err) {
+      console.log('read error', srcPath)
+    }
+    cb && cb(err)
+  })
+
+  var ws = fs.createWriteStream(tarPath)
+  ws.on('error', function(err) {
+    if (err) {
+      console.log('write error', tarPath)
+    }
+    cb && cb(err)
+  })
+  ws.on('close', function(ex) {
+    cb && cb(ex)
+  })
+
+  rs.pipe(ws)
+}
+
+exports.copyFile = copyFile
 exports.CopyDir = CopyDir
 exports.ReplaceTemp = ReplaceTemp
 exports.DeleteDir = DeleteDir

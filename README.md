@@ -6,7 +6,7 @@
 
 - Dependencies:
   - go project: nodejs & go
-  - java project: nodejs & java
+  - java project: nodejs & java v1.8 & maven & curl
 
 - This "Hello world" example uses "node0"(addr: iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv) as the consumer and provider.
 
@@ -49,15 +49,13 @@
     | output-dir(o) | Generate path | ../output |  |
   - Example
     ```shell
-    node service-gen.js --type c --lang go -s hello --schemas schemas.json -o ../consumer
-    node service-gen.js --type p --lang go -s hello --schemas schemas.json -o ../provider
+    node service-gen.js --type consumer --lang go --service-name hello --schemas schemas.json --output-dir ../consumer
+    node service-gen.js --type provider --lang go --service-name hello --schemas schemas.json --output-dir ../provider
     ```
 
 ## 3.Get ready
 
   #### 3.1 Key management
-    
-  - go
 
     - Commond to key management
       | commond | description |
@@ -66,7 +64,7 @@
       | show | Show information of key |
       | import | Import key |
       
-    - You need to export node0, and import to your consumer's and provider's project.
+    - You need to put the exported information into a file node0.key.
 
       ###### 3.1.1 Export node0
 
@@ -77,18 +75,14 @@
 
       ###### 3.1.2 Import node0
 
-        - Create file node.txt, write export to it.
-
-          ```shell
-          hello-sc keys import node0 node0.txt
-          hello-sp keys import node0 node0.txt
-          ```
-    
-  - java
-
-    ```shell
-    iris testnet --v=1 --chain-id=iris -o=/home/sunny/iris
-    ```
+          - Example of go
+            ```shell
+            hello-sc keys import node0 node0.key
+            hello-sp keys import node0 node0.key
+            ```
+          
+          - Example of java
+            Specify the path of the file in config.yaml.
 
   #### 3.2 Callback function
   - You need to be in the hello folder under the generated code directory, there is a file response_callback.
@@ -153,8 +147,8 @@
         serviceOutput.output = "hello-world";
 
         Application.logger.info("Sending response");
-        ServiceResponse res = new ServiceResponse();
-        res.setBody(serviceOutput);
+        ServiceResponse res = new ServiceResponse(this.keyName, this.password);
+        res.setBody(output);
         
         return res;
       }
@@ -180,10 +174,9 @@
   
   - Example
     ```yaml
-    # service config
     chain_id: iris
     node_rpc_addr: http://localhost:26657
-    node_grpc_addr: localhost:9090
+    node_grpc_addr: http://localhost:9090
     key_path: .keys
     key_name: node0
     fee: 4stake
@@ -231,14 +224,29 @@
 
 ## 7.Start consumer's subscribe response and provider's subscribe request.
   - **provider**(Subscribe service request first.)
-    ```shell
-    hello-sp start
-    ```
+    - Example of go
+      ```shell
+      hello-sp start
+      ```
+    
+    - Example of java
+      ```shell
+      java -jar target/hello-sp.jar start
+      ```
 
   - **consumer**(Invoke and subscribe service response.)
-    ```shell
-    hello-sc invoke \
-      --providers iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv \
-      --fee-cap 1 \
-      --input {"header":{},"body":{"input":"hello"}} \
-    ```
+    - Example of go
+      ```shell
+      hello-sc invoke \
+        --providers iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv \
+        --fee-cap 1 \
+        --input {"header":{},"body":{"input":"hello"}} \
+      ```
+    
+    - Example of java
+      ```shell
+      java -jar target/hello-sc.jar invoke \
+        --providers iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv \
+        --fee-cap 1 \
+        --input {"header":{},"body":{"input":"hello"}} \
+      ```

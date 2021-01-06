@@ -16,6 +16,7 @@ public class CallbackImpl implements ICallback {
   
   public void onResponse(ServiceOutput req) {
 		System.out.println("----------------- Consumer -----------------");
+		// Supplementary service logic...
 		System.out.println("Got response: "+ JSON.toJSONString(req));
   }
 }
