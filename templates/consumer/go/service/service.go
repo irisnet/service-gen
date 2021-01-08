@@ -106,14 +106,18 @@ func MakeServiceClientWrapper(config Config, password string) ServiceClientWrapp
 }
 
 // InvokeService wraps service.InvokeService
-func (s ServiceClientWrapper) InvokeService(invokeConfig service.InvokeServiceRequest) (string, string, error) {
+func (s ServiceClientWrapper) InvokeService(invokeConfig service.InvokeServiceRequest) (string, string) {
 	reqCtxID, err := s.ServiceClient.InvokeService(invokeConfig, s.buildBaseTx())
 	if err != nil {
 		return "", "", err
 	}
 	QueryServiceRequestResponse, err := s.ServiceClient.QueryRequestsByReqCtx(reqCtxID, 1)
+	if err != nil {
+		common.Logger.Errorf("failed to invoke service request, err: %s \n", err.Error())
+		return
+	}
 	reqID := QueryServiceRequestResponse[0].ID
-	return reqCtxID, reqID, err
+	return reqCtxID, reqID
 }
 
 // SubscribeServiceResponse wraps service.SubscribeServiceResponse
@@ -122,7 +126,7 @@ func (s ServiceClientWrapper) SubscribeServiceResponse(
 	consumerAddr string,
 	responseCallback types.ResponseCallback,
 ) error {
-	builder := createFilter(consumerAddr)
+	builder := createFilter(reqID, consumerAddr)
 
 	callback := func(txs sdkTypes.EventDataTx) {
 		for _, v := range txs.Result.Events {
@@ -153,7 +157,7 @@ func (s ServiceClientWrapper) buildBaseTx() sdkTypes.BaseTx {
 	}
 }
 
-func createFilter(consumerAddr string) (builder *sdkTypes.EventQueryBuilder) {
+func createFilter(reqID string, consumerAddr string) (builder *sdkTypes.EventQueryBuilder) {
 	return sdkTypes.NewEventQueryBuilder().AddCondition(
 		sdkTypes.NewCond(
 			sdkTypes.EventTypeMessage,
@@ -163,16 +167,16 @@ func createFilter(consumerAddr string) (builder *sdkTypes.EventQueryBuilder) {
 		),
 	).AddCondition(sdkTypes.NewCond(
 		sdkTypes.EventTypeMessage,
-		"service_name",
+		"request_id",
 	).EQ(
-		sdkTypes.EventValue(types.ServiceName),
-	),
-	).AddCondition(
-		sdkTypes.NewCond(
-			sdkTypes.EventTypeMessage,
-			"consumer",
-		).EQ(
-			sdkTypes.EventValue(consumerAddr),
-		),
+		sdkTypes.EventValue(reqID),
 	)
+	// ).AddCondition(
+	// 	sdkTypes.NewCond(
+	// 		sdkTypes.EventTypeMessage,
+	// 		"consumer",
+	// 	).EQ(
+	// 		sdkTypes.EventValue(consumerAddr),
+	// 	),
+	// )
 }
