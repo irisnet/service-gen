@@ -87,7 +87,7 @@ if (lang == "go") {
   fs.rmdirSync(output_dir + "/src/main/java/service/" + type + "/{{service_name}}")
 }
 
-// Modify the service name in the app.go
+// Modify the service name
 utils.ReplaceTemp(output_dir, service_name)
 
 console.log("Complete copying config and replacing template.")

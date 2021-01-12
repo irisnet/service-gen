@@ -5,17 +5,17 @@
 - We will complete the process. First, consumer invokes service. Second, provider monitors request and sends response. Third, consumer gets the response.
 
 - Dependencies:
-  - go project: nodejs & go
+  - go project: nodejs & go & git
   - java project: nodejs & java v1.8 & maven & curl
 
 - This "Hello world" example uses "node0"(addr: iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv) as the consumer and provider.
 
-## 1.Download
+## 1. Download
   ```shell
   git clone https://github.com/irisnet/service-gen.git
   ```
 
-## 2.Generate code project.
+## 2. Generate code project.
 
   - Create schemas.json for your code project.
     ```json
@@ -53,38 +53,39 @@
     node service-gen.js --type provider --lang go --service-name hello --schemas schemas.json --output-dir ../provider
     ```
 
-## 3.Get ready
+## 3. Get ready
 
-  #### 3.1 Key management
+  ### 3.1 Key management
 
-    - Commond to key management
-      | commond | description |
-      | :-: | :-: |
-      | add | New-build key |
-      | show | Show information of key |
-      | import | Import key |
+  - Commond to key management
+    | commond | description |
+    | :-: | :-: |
+    | add | New-build key |
+    | show | Show information of key |
+    | import | Import key |
       
     - You need to put the exported information into a file node0.key.
 
-      ###### 3.1.1 Export node0
+      ##### 3.1.1 Export node0
 
+        ```shell
+        iris testnet --v=1 --chain-id=iris -o=/home/sunny/iris
+        iris keys export node0 --home /home/sunny/iris/node0/ iriscli
+        ```
+
+      ##### 3.1.2 Import node0
+
+        - Example of go
           ```shell
-          iris testnet --v=1 --chain-id=iris -o=/home/sunny/iris
-          iris keys export node0 --home /home/sunny/iris/node0/ iriscli
+          hello-sc keys import node0 node0.key
+          hello-sp keys import node0 node0.key
           ```
-
-      ###### 3.1.2 Import node0
-
-          - Example of go
-            ```shell
-            hello-sc keys import node0 node0.key
-            hello-sp keys import node0 node0.key
-            ```
           
-          - Example of java
-            Specify the path of the file in config.yaml.
+        - Example of java
+          
+          Specify the path of the file in config.yaml.
 
-  #### 3.2 Callback function
+  ### 3.2 Callback function
   - The files that need to be modified are on the floder hello.
 
   - **consumer**
@@ -158,7 +159,7 @@
   
   - Compile your project.
 
-  #### 3.3 Config
+  ### 3.3 Config
   - Note!!!: The configuration file is in the $HOME/.hello-sc for consumer and $HOME/.hello-sp for provider.
 
   - Configuration parameter:
@@ -179,17 +180,17 @@
     node_grpc_addr: http://localhost:9090
     key_path: .keys
     key_name: node0
-    fee: 4stake
+    fee: 4point
     key_algorithm: sm2
     ```
 
-## 4.Start irisnet.
+## 4. Start irisnet.
 
     ```shell
     iris start --home=/home/sunny/iris/node0/iris
     ```
 
-## 5.Define service
+## 5. Define service
   - Open another terminal.
     ```shell
     iris tx service define \
@@ -202,27 +203,27 @@
       --chain-id=iris \
       -b=block -y \
       --home=/home/sunny/iris/node0/iriscli \
-      --fees 10stake \
+      --fees 10point \
     ```
 
-## 6.Bind service
+## 6. Bind service
 
   ```shell
     iris tx service bind \
       --service-name=hello \
-      --deposit=10000stake \
-      --pricing='{"price":"1stake"}' \
+      --deposit=10000point \
+      --pricing='{"price":"1point"}' \
       --qos=50 \
       --from=node0 \
       --chain-id=iris \
       -b=block -y \
       --home=/home/sunny/iris/node0/iriscli \
       --options={} \
-      --fees 10stake \
+      --fees 10point \
       --provider=iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv \
   ```
 
-## 7.Start consumer's subscribe response and provider's subscribe request.
+## 7. Start consumer's subscribe response and provider's subscribe request.
   - **provider**(Subscribe service request first.)
     - Example of go
       ```shell
