@@ -47,10 +47,10 @@ public class RootCmd {
 
   @Parameters(commandDescription = "Import Key.")
   public static class CommandImport {
-    @Parameter(names = {"--name", "-n"}, description = "key name", required = true)
+    @Parameter(names = {"--name", "-n"}, description = "key name")
     private String keyName;
 
-    @Parameter(names = {"--path", "-p"}, description = "key path", required = true)
+    @Parameter(names = {"--path", "-p"}, description = "key path")
     public String keyPath;
 
     @Parameter(names = { "--config", "-c" }, description = "Config path.")
@@ -142,6 +142,14 @@ public class RootCmd {
   public void importKey(CommandImport commandImport) {
     try {
       Config config = new Config(commandImport.configPath);
+
+      if (commandImport.keyName == null) {
+        commandImport.keyName = config.keyName;
+      }
+      if (commandImport.keyPath == null) {
+        commandImport.keyPath = config.keyPath;
+      }
+
       Application application = new Application(config.keyAlgorithm, config.nodeRPCAddr, config.nodeGRPCAddr, config.chainID, config.fee);
       application.importKey(commandImport.keyName, config.password, config.password, commandImport.keyPath);
     } catch (Exception e) {

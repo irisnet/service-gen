@@ -35,17 +35,31 @@ public class RootCmd {
     private String configPath;
   }
 
+  @Parameters(commandDescription = "Import Key.")
+  public static class CommandImport {
+    @Parameter(names = {"--name", "-n"}, description = "key name")
+    private String keyName;
+
+    @Parameter(names = {"--path", "-p"}, description = "key path")
+    public String keyPath;
+
+    @Parameter(names = { "--config", "-c" }, description = "Config path.")
+    private String configPath;
+  }
+
   public static void main(String[] args) {
     RootCmd root = new RootCmd();
     CommandStart start = new CommandStart();
     CommandAdd addKey = new CommandAdd();
     CommandShow showKey = new CommandShow();
+    CommandImport importKey = new CommandImport();
 
     JCommander jc = JCommander.newBuilder()
       .addObject(root)
       .addCommand("start", start)
       .addCommand("add", addKey)
       .addCommand("show", showKey)
+      .addCommand("import", importKey)
       .build();
 
     try {
@@ -72,6 +86,9 @@ public class RootCmd {
         break;
       case "show":
         root.showKey(showKey);
+        break;
+      case "import":
+        root.importKey(importKey);
         break;
     }
   }
@@ -107,6 +124,24 @@ public class RootCmd {
       Config config = new Config(show.configPath);
       Application application = new Application(config.keyAlgorithm, config.nodeRPCAddr, config.nodeGRPCAddr, config.chainID, config.fee);
       application.showKey(show.keyName);
+    } catch (Exception e) {
+      System.err.println(e.getMessage());
+    }
+  }
+
+  public void importKey(CommandImport commandImport) {
+    try {
+      Config config = new Config(commandImport.configPath);
+
+      if (commandImport.keyName == null) {
+        commandImport.keyName = config.keyName;
+      }
+      if (commandImport.keyPath == null) {
+        commandImport.keyPath = config.keyPath;
+      }
+
+      Application application = new Application(config.keyAlgorithm, config.nodeRPCAddr, config.nodeGRPCAddr, config.chainID, config.fee);
+      application.importKey(commandImport.keyName, config.password, config.password, commandImport.keyPath);
     } catch (Exception e) {
       System.err.println(e.getMessage());
     }

@@ -106,7 +106,7 @@ func MakeServiceClientWrapper(config Config, password string) ServiceClientWrapp
 }
 
 // InvokeService wraps service.InvokeService
-func (s ServiceClientWrapper) InvokeService(invokeConfig service.InvokeServiceRequest) (string, string) {
+func (s ServiceClientWrapper) InvokeService(invokeConfig service.InvokeServiceRequest) (string, string, error) {
 	reqCtxID, err := s.ServiceClient.InvokeService(invokeConfig, s.buildBaseTx())
 	if err != nil {
 		return "", "", err
@@ -114,10 +114,10 @@ func (s ServiceClientWrapper) InvokeService(invokeConfig service.InvokeServiceRe
 	QueryServiceRequestResponse, err := s.ServiceClient.QueryRequestsByReqCtx(reqCtxID, 1)
 	if err != nil {
 		common.Logger.Errorf("failed to invoke service request, err: %s \n", err.Error())
-		return
+		return "", "", err
 	}
 	reqID := QueryServiceRequestResponse[0].ID
-	return reqCtxID, reqID
+	return reqCtxID, reqID, nil
 }
 
 // SubscribeServiceResponse wraps service.SubscribeServiceResponse

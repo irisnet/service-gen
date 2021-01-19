@@ -49,7 +49,11 @@ func (app App) subscribe(reqCtxID, reqID string, responseCallback types.Response
 
 // Invoke providers' service
 func (app App) Invoke(invokeConfig servicesdk.InvokeServiceRequest) {
-	reqCtxID, reqID := app.ServiceClient.InvokeService(invokeConfig)
+	reqCtxID, reqID, err := app.ServiceClient.InvokeService(invokeConfig)
+	if err != nil {
+		app.Logger.Errorf("failed to invoke service request, err: %s \n", err.Error())
+		return
+	}
 
 	fmt.Println("Successfully invoke service.")
 	fmt.Println("reqCtxID:", reqCtxID)
