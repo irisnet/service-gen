@@ -107,7 +107,7 @@ func MakeServiceClientWrapper(config Config, password string) ServiceClientWrapp
 
 // InvokeService wraps service.InvokeService
 func (s ServiceClientWrapper) InvokeService(invokeConfig service.InvokeServiceRequest) (string, string, error) {
-	reqCtxID, err := s.ServiceClient.InvokeService(invokeConfig, s.buildBaseTx())
+	reqCtxID, _, err := s.ServiceClient.InvokeService(invokeConfig, s.buildBaseTx())
 	if err != nil {
 		return "", "", err
 	}

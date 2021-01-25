@@ -64,7 +64,7 @@
     | show | Show information of key |
     | import | Import key |
       
-    - You need to put the exported information into a file node0.key.
+    - You need to put the exported information into a file node0.key, and specify the path of the file in config.yaml.
 
       ##### 3.1.1 Export node0
 
@@ -77,13 +77,14 @@
 
         - Example of go
           ```shell
-          hello-sc keys import node0 node0.key
-          hello-sp keys import node0 node0.key
+          hello-sc keys import node0
+          hello-sp keys import node0
           ```
           
         - Example of java
           
-          Specify the path of the file in config.yaml.
+          java -jar target/hello.sc import node0
+          java -jar target/hello.sp import node0
 
   ### 3.2 Callback function
   - The files that need to be modified are on the floder hello.

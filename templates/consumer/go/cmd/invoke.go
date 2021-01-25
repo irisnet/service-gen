@@ -35,7 +35,7 @@ hello-sc invoke [config-path] \
 	--fee-cap 1 \
 	--input '{"header":{},"body":{"input":"hello"}}' \
 	--timeout 100 \
-	--repeated false \
+	--repeated \
 	--frequency 110 \
 	--total 1 \`,
 		Args: cobra.MaximumNArgs(1),
