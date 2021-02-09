@@ -8,7 +8,7 @@ import (
 
 	"github.com/irisnet/service-gen/common"
 	"github.com/irisnet/service-gen/service"
-	"github.com/irisnet/service-gen/{{service_name}}"
+	callback "github.com/irisnet/service-gen/{{service_name}}"
 	"github.com/irisnet/service-gen/types"
 )
 
@@ -23,7 +23,7 @@ type App struct {
 func NewApp(serviceClient service.ServiceClientWrapper) App {
 	return App{
 		ServiceClient:    serviceClient,
-		ResponseCallback: {{service_name}}.ResponseCallback,
+		ResponseCallback: callback.ResponseCallback,
 		Logger:           common.Logger,
 	}
 }
