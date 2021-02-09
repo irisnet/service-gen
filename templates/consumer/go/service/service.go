@@ -113,7 +113,6 @@ func (s ServiceClientWrapper) InvokeService(invokeConfig service.InvokeServiceRe
 	}
 	QueryServiceRequestResponse, err := s.ServiceClient.QueryRequestsByReqCtx(reqCtxID, 1)
 	if err != nil {
-		common.Logger.Errorf("failed to invoke service request, err: %s \n", err.Error())
 		return "", "", err
 	}
 	reqID := QueryServiceRequestResponse[0].ID
@@ -165,18 +164,12 @@ func createFilter(reqID string, consumerAddr string) (builder *sdkTypes.EventQue
 		).EQ(
 			sdkTypes.EventValue("respond_service"),
 		),
-	).AddCondition(sdkTypes.NewCond(
-		sdkTypes.EventTypeMessage,
-		"request_id",
-	).EQ(
-		sdkTypes.EventValue(reqID),
+	).AddCondition(
+		sdkTypes.NewCond(
+			sdkTypes.EventTypeResponseService,
+			"request_id",
+		).EQ(
+			sdkTypes.EventValue(reqID),
+		),
 	)
-	// ).AddCondition(
-	// 	sdkTypes.NewCond(
-	// 		sdkTypes.EventTypeMessage,
-	// 		"consumer",
-	// 	).EQ(
-	// 		sdkTypes.EventValue(consumerAddr),
-	// 	),
-	// )
 }

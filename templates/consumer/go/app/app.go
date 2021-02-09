@@ -6,6 +6,7 @@ import (
 	servicesdk "github.com/irisnet/service-sdk-go/service"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/irisnet/service-gen/common"
 	"github.com/irisnet/service-gen/service"
 	"github.com/irisnet/service-gen/{{service_name}}"
 	"github.com/irisnet/service-gen/types"
@@ -19,19 +20,15 @@ type App struct {
 }
 
 // NewApp constructs a new App instance
-func NewApp(
-	serviceClient service.ServiceClientWrapper,
-	ResponseCallback types.ResponseCallback,
-	logger *log.Logger,
-) App {
+func NewApp(serviceClient service.ServiceClientWrapper) App {
 	return App{
 		ServiceClient:    serviceClient,
 		ResponseCallback: {{service_name}}.ResponseCallback,
-		Logger:           logger,
+		Logger:           common.Logger,
 	}
 }
 
-func (app App) subscribe(reqCtxID, reqID string, responseCallback types.ResponseCallback) {
+func (app App) subscribe(reqCtxID, reqID string) {
 	addr, err := app.ServiceClient.ShowKey(app.ServiceClient.KeyName, app.ServiceClient.Password)
 	if err != nil {
 		app.Logger.Errorf("failed to register service request listener, err: %s", err.Error())
@@ -49,6 +46,7 @@ func (app App) subscribe(reqCtxID, reqID string, responseCallback types.Response
 
 // Invoke providers' service
 func (app App) Invoke(invokeConfig servicesdk.InvokeServiceRequest) {
+	invokeConfig.Callback = {{service_name}}.ResponseCallback
 	reqCtxID, reqID, err := app.ServiceClient.InvokeService(invokeConfig)
 	if err != nil {
 		app.Logger.Errorf("failed to invoke service request, err: %s \n", err.Error())
@@ -59,5 +57,5 @@ func (app App) Invoke(invokeConfig servicesdk.InvokeServiceRequest) {
 	fmt.Println("reqCtxID:", reqCtxID)
 	fmt.Println("reqID:", reqID)
 
-	app.subscribe(reqCtxID, reqID, app.ResponseCallback)
+	app.subscribe(reqCtxID, reqID)
 }

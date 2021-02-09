@@ -3,6 +3,7 @@ package app
 import (
 	log "github.com/sirupsen/logrus"
 
+	"github.com/irisnet/service-gen/common"
 	"github.com/irisnet/service-gen/service"
 	"github.com/irisnet/service-gen/{{service_name}}"
 	"github.com/irisnet/service-gen/types"
@@ -16,15 +17,11 @@ type App struct {
 }
 
 // NewApp constructs a new App instance
-func NewApp(
-	serviceClient service.ServiceClientWrapper,
-	requestCallback types.RequestCallback,
-	logger *log.Logger,
-) App {
+func NewApp(serviceClient service.ServiceClientWrapper) App {
 	return App{
 		ServiceClient:   serviceClient,
 		RequestCallback: {{service_name}}.RequestCallback,
-		Logger:          logger,
+		Logger:          common.Logger,
 	}
 }
 

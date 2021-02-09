@@ -4,8 +4,8 @@ go 1.15
 
 replace (
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
-	github.com/irisnet/service-sdk-go => github.com/secret2830/service-sdk-go v0.0.0-20200930025908-91ed6ca17b1b
-	github.com/tendermint/tendermint => github.com/bianjieai/tendermint v0.33.4-irita-200703.0.20200920152706-f907f8a9ab6c
+	github.com/irisnet/service-sdk-go => /mnt/d/gocode/src/service-sdk-go
+	github.com/tendermint/tendermint => github.com/bianjieai/tendermint v0.34.1-irita-210113
 )
 
 require (

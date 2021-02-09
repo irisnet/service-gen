@@ -35,16 +35,16 @@ function CopyDir(src,dist){
   _copy(src,dist);
 }
 
-function ReplaceTemp(url, service_name) {
-  let reg = new RegExp("{{service_name}}", 'g');
+function ReplaceTemp(url, old, dist) {
+  let reg = new RegExp(old, 'g');
   let files = fs.readdirSync(url);
   files.forEach(function (file, index) {
     const curUrl = path.join(url, file);
     if (fs.statSync(curUrl).isDirectory()) {
-      ReplaceTemp(curUrl, service_name);
+      ReplaceTemp(curUrl,old, dist);
     } else {
       let data = fs.readFileSync(curUrl)
-      data = data.toString().replace(reg, service_name);
+      data = data.toString().replace(reg, dist);
       fs.writeFileSync(curUrl, data)
     }
   });

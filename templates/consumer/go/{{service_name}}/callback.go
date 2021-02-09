@@ -12,15 +12,18 @@ import (
 // ResponseCallback provider need to supplementary service logic
 func ResponseCallback(reqCtxID, reqID, output string) {
 	common.Logger.Infof("Get response: %+v\n", output)
-	serviceOutput := parseOutput(output)
+	serviceOutput, err := parseOutput(output)
 	// Supplementary service logic...
 
 }
 
 func parseOutput(output string) (serviceOutput *types.ServiceOutput) {
 	output = gjson.Get(output, "body").String()
-
-	err := json.Unmarshal([]byte(output), &serviceOutput)
+	serviceOutput = &types.ServiceOutput
+	if output == "" {
+		return serviceOutput
+	}
+	err := json.Unmarshal([]byte(output), serviceOutput)
 	if err != nil {
 		panic(err)
 	}
