@@ -20,7 +20,7 @@ func RequestCallback(reqID, input string) (
 	if err != nil {
 		requestResult.State = types.ClientError
 		requestResult.Message = "failed to parse input"
-		return output, requestResult
+		return nil, requestResult
 	}
 	common.Logger.Info("Get request: \n", serviceInput)
 	// Supplementary service logic...
