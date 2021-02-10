@@ -1,4 +1,7 @@
-package {{service_name}}
+package
+
+import "encoding/json"
+{{service_name}}
 
 import (
 	"encoding/json"
@@ -11,8 +14,8 @@ import (
 
 // ResponseCallback provider need to supplementary service logic
 func ResponseCallback(reqCtxID, reqID, output string) {
-	common.Logger.Infof("Get response: %+v\n", output)
-	serviceOutput, err := parseOutput(output)
+	common.Logger.Infof("Get response: \n", output)
+	serviceOutput := parseOutput(output)
 	// Supplementary service logic...
 
 }

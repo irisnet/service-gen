@@ -1,4 +1,10 @@
-package {{service_name}}
+package
+
+import (
+	"encoding/json"
+	"service-gen/templates/provider/go/types"
+)
+{{service_name}}
 
 import (
 	"encoding/json"
@@ -20,7 +26,7 @@ func RequestCallback(reqID, input string) (
 	if err != nil {
 		requestResult.State = types.ClientError
 		requestResult.Message = "failed to parse input"
-		return nil, requestResult
+		return output, requestResult
 	}
 	common.Logger.Info("Get request: \n", serviceInput)
 	// Supplementary service logic...
