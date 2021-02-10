@@ -1,10 +1,4 @@
-package
-
-import (
-	"encoding/json"
-	"service-gen/templates/provider/go/types"
-)
-{{service_name}}
+package {{service_name}}
 
 import (
 	"encoding/json"

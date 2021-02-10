@@ -1,7 +1,4 @@
-package
-
-import "encoding/json"
-{{service_name}}
+package {{service_name}}
 
 import (
 	"encoding/json"
