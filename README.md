@@ -55,7 +55,33 @@
 
 ## 3. Get ready
 
-  ### 3.1 Key management
+  ### 3.1 Config
+  - Note!!!: The configuration file is in the $HOME/.hello-sc for consumer and $HOME/.hello-sp for provider.
+
+  - Configuration parameter:
+    | name | description |
+    | :-: | :-: |
+    | chain_id | Chain id |
+    | node_rpc_addr | Node URL |
+    | node_grpc_addr | Node GRPC address |
+    | key_path | Key path |
+    | key_name | Key name |
+    | fee | Transaction fee |
+    | key_algorithm | Key algorithm |
+  
+  - Example
+    ```yaml
+    chain_id: iris
+    node_rpc_addr: http://localhost:26657
+    node_grpc_addr: http://localhost:9090
+    key_path: .keys
+    key_name: node0
+    fee: 4uiris
+    key_algorithm: sm2
+    ```
+
+
+  ### 3.2 Key management
 
   - Commond to key management
     | commond | description |
@@ -86,7 +112,7 @@
           java -jar target/hello.sc import node0
           java -jar target/hello.sp import node0
 
-  ### 3.2 Callback function
+  ### 3.3 Callback function
   - The files that need to be modified are on the floder hello.
 
   - **consumer**
@@ -160,31 +186,6 @@
   
   - Compile your project.
 
-  ### 3.3 Config
-  - Note!!!: The configuration file is in the $HOME/.hello-sc for consumer and $HOME/.hello-sp for provider.
-
-  - Configuration parameter:
-    | name | description |
-    | :-: | :-: |
-    | chain_id | Chain id |
-    | node_rpc_addr | Node URL |
-    | node_grpc_addr | Node GRPC address |
-    | key_path | Key path |
-    | key_name | Key name |
-    | fee | Transaction fee |
-    | key_algorithm | Key algorithm |
-  
-  - Example
-    ```yaml
-    chain_id: iris
-    node_rpc_addr: http://localhost:26657
-    node_grpc_addr: http://localhost:9090
-    key_path: .keys
-    key_name: node0
-    fee: 4point
-    key_algorithm: sm2
-    ```
-
 ## 4. Start irisnet.
 
     ```shell
@@ -204,7 +205,7 @@
       --chain-id=iris \
       -b=block -y \
       --home=/home/sunny/iris/node0/iriscli \
-      --fees 10point \
+      --fees 10uiris \
     ```
 
 ## 6. Bind service
@@ -212,15 +213,15 @@
   ```shell
     iris tx service bind \
       --service-name=hello \
-      --deposit=10000point \
-      --pricing='{"price":"1point"}' \
+      --deposit=10000uiris \
+      --pricing='{"price":"1uiris"}' \
       --qos=50 \
       --from=node0 \
       --chain-id=iris \
       -b=block -y \
       --home=/home/sunny/iris/node0/iriscli \
       --options={} \
-      --fees 10point \
+      --fees 10uiris \
       --provider=iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv \
   ```
 
@@ -237,6 +238,7 @@
       ```
 
   - **consumer**(Invoke and subscribe service response.)
+  - Note!!!: The   of fee-cap is 
     - Example of go
       ```shell
       hello-sc invoke \

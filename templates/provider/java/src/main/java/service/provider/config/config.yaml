@@ -4,5 +4,5 @@ node_rpc_addr: http://172.18.20.99:26657
 node_grpc_addr: http://172.18.20.99:9090
 key_name: sp
 key_path: .key
-fee: 4point
+fee: 4uiris
 key_algorithm: SM2

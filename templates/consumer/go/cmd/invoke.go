@@ -52,7 +52,8 @@ hello-sc invoke [config-path] \
 			frequency := viper.GetUint64(flagFrequency)
 			total := viper.GetInt64(flagTotal)
 
-			serviceFeeCap := sdkTypes.NewDecCoins(sdkTypes.NewDecCoin("point", sdkTypes.NewInt(int64(feeCap))))
+			
+			serviceFeeCap := sdkTypes.NewDecCoins(sdkTypes.NewDecCoin("uiris", sdkTypes.NewInt(int64(feeCap))))
 
 			invokeConfig := servicesdk.InvokeServiceRequest{
 				ServiceName:       types.ServiceName,

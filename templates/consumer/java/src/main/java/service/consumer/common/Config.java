@@ -14,7 +14,7 @@ public class Config {
   private static final String DefaultKeyName = "sc";
   private static final String DefaultKeyPath = ".key";
 
-  private static final String DefaultFee = "4point";
+  private static final String DefaultFee = "4uiris";
   private static final String DefaultKeyAlgorithm = "SM2";
 
   private static String ConfigPath = System.getProperty("user.home") + "/." + ServiceName + "-sc/config.yaml";
