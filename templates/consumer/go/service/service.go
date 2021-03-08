@@ -107,13 +107,16 @@ func MakeServiceClientWrapper(config Config, password string) ServiceClientWrapp
 
 // InvokeService wraps service.InvokeService
 func (s ServiceClientWrapper) InvokeService(invokeConfig service.InvokeServiceRequest) (string, string, error) {
-	reqCtxID, err := s.ServiceClient.InvokeService(invokeConfig, s.buildBaseTx())
+	reqCtxID, _, err := s.ServiceClient.InvokeService(invokeConfig, s.buildBaseTx())
 	if err != nil {
 		return "", "", err
 	}
 	QueryServiceRequestResponse, err := s.ServiceClient.QueryRequestsByReqCtx(reqCtxID, 1)
+	if err != nil {
+		return "", "", err
+	}
 	reqID := QueryServiceRequestResponse[0].ID
-	return reqCtxID, reqID, err
+	return reqCtxID, reqID, nil
 }
 
 // SubscribeServiceResponse wraps service.SubscribeServiceResponse
@@ -122,7 +125,7 @@ func (s ServiceClientWrapper) SubscribeServiceResponse(
 	consumerAddr string,
 	responseCallback types.ResponseCallback,
 ) error {
-	builder := createFilter(consumerAddr)
+	builder := createFilter(reqID, consumerAddr)
 
 	callback := func(txs sdkTypes.EventDataTx) {
 		for _, v := range txs.Result.Events {
@@ -153,7 +156,7 @@ func (s ServiceClientWrapper) buildBaseTx() sdkTypes.BaseTx {
 	}
 }
 
-func createFilter(consumerAddr string) (builder *sdkTypes.EventQueryBuilder) {
+func createFilter(reqID string, consumerAddr string) (builder *sdkTypes.EventQueryBuilder) {
 	return sdkTypes.NewEventQueryBuilder().AddCondition(
 		sdkTypes.NewCond(
 			sdkTypes.EventTypeMessage,
@@ -161,18 +164,12 @@ func createFilter(consumerAddr string) (builder *sdkTypes.EventQueryBuilder) {
 		).EQ(
 			sdkTypes.EventValue("respond_service"),
 		),
-	).AddCondition(sdkTypes.NewCond(
-		sdkTypes.EventTypeMessage,
-		"service_name",
-	).EQ(
-		sdkTypes.EventValue(types.ServiceName),
-	),
 	).AddCondition(
 		sdkTypes.NewCond(
-			sdkTypes.EventTypeMessage,
-			"consumer",
+			sdkTypes.EventTypeResponseService,
+			"request_id",
 		).EQ(
-			sdkTypes.EventValue(consumerAddr),
+			sdkTypes.EventValue(reqID),
 		),
 	)
 }

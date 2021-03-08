@@ -10,12 +10,12 @@ import (
 
 // default config variables
 var (
-	defaultChainID       = "irita-hub"
+	defaultChainID       = "iris-hub"
 	defaultNodeRPCAddr   = "http://127.0.0.1:26657"
 	defaultNodeGRPCAddr  = "127.0.0.1:9090"
-	defaultKeyPath       = utils.MustGetHomeDir() + "/.iritacli"
+	defaultKeyPath       = utils.MustGetHomeDir() + "/.iriscli"
 	defaultGas           = uint64(200000)
-	defaultFee           = "4point"
+	defaultFee           = "4uiris"
 	defaultBroadcastMode = types.Commit
 	defaultKeyAlgorithm  = "sm2"
 )
