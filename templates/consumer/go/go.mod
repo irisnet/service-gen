@@ -10,7 +10,7 @@ replace (
 require (
 	github.com/cosmos/cosmos-sdk v0.40.0 // indirect
 	github.com/howeyc/gopass v0.0.0-20190910152052-7cb4b85ec19c
-	github.com/irisnet/service-sdk-go master
+	github.com/irisnet/service-sdk-go v1.0.0
 	github.com/sirupsen/logrus v1.6.0
 	github.com/spf13/cobra v1.1.1
 	github.com/spf13/pflag v1.0.5
