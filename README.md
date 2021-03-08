@@ -2,11 +2,22 @@
 
 - Codegen tool for service providers and consumers.
 
+- We will complete the process. First, consumer invokes service. Second, provider monitors request and sends response. Third, consumer gets the response.
+
+- Dependencies:
+  - go project: nodejs & go & git
+  - java project: nodejs & java v1.8 & maven & curl
+
 - This "Hello world" example uses "node0"(addr: iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv) as the consumer and provider.
 
-## 1.Generate code project.
+## 1. Download
+  ```shell
+  git clone https://github.com/irisnet/service-gen.git
+  ```
 
-  - Create schemas.json on your code project.
+## 2. Generate code project.
+
+  - Create schemas.json for your code project.
     ```json
       {
         "input": {
@@ -32,49 +43,80 @@
     | name | description | default value | parameter value |
     | :-: | :-: | :-: | :-: |
     | type | Generate consumer's or provider's code | | consumer(c) provider(p) |
-    | lang | Select language | | go, java, js(Only support go for the time being) |
-    | service-name | Service's name |  |  |
+    | lang | Select language | | go, java, js |
+    | service-name(s) | Service's name |  |  |
     | schemas | Path of schemas | ./schemas.json |  |
-    | output-dir | Generate path | ../output |  |
+    | output-dir(o) | Generate path | ../output |  |
   - Example
     ```shell
-    node service-gen.js --type c --lang go -s hello --schemas schemas.json -o ../consumer
-    node service-gen.js --type p --lang go -s hello --schemas schemas.json -o ../provider
+    node service-gen.js --type consumer --lang go --service-name hello --schemas schemas.json --output-dir ../consumer
+    node service-gen.js --type provider --lang go --service-name hello --schemas schemas.json --output-dir ../provider
     ```
 
-## 2.Get ready
+## 3. Get ready
 
-  #### 2.1 Key management
+  ### 3.1 Config
+  - Note!!!: The configuration file is in the $HOME/.hello-sc for consumer and $HOME/.hello-sp for provider.
+
+  - Configuration parameter:
+    | name | description |
+    | :-: | :-: |
+    | chain_id | Chain id |
+    | node_rpc_addr | Node URL |
+    | node_grpc_addr | Node GRPC address |
+    | key_path | Key path |
+    | key_name | Key name |
+    | fee | Transaction fee |
+    | key_algorithm | Key algorithm |
+  
+  - Example
+    ```yaml
+    chain_id: iris
+    node_rpc_addr: http://localhost:26657
+    node_grpc_addr: http://localhost:9090
+    key_path: .keys
+    key_name: node0
+    fee: 4uiris
+    key_algorithm: sm2
+    ```
+
+
+  ### 3.2 Key management
+
   - Commond to key management
     | commond | description |
     | :-: | :-: |
     | add | New-build key |
     | show | Show information of key |
     | import | Import key |
-    
-  - You need to export node0, and import to your consumer's and provider's project.
+      
+    - You need to put the exported information into a file node0.key, and specify the path of the file in config.yaml.
 
-    ###### 2.1.1 Export node0
-
-      ```shell
-      iris testnet --v=1 --chain-id=iris -o=/home/sunny/iris
-      iris keys export node0 --home /home/sunny/iris/node0/ iriscli
-      ```
-
-    ###### 2.1.2 Import node0
-
-      - Create file node.txt, write export to it.
+      ##### 3.1.1 Export node0
 
         ```shell
-        hello-sc keys import node0 node0.txt
-        hello-sp keys import node0 node0.txt
+        iris testnet --v=1 --chain-id=iris -o=/home/sunny/iris
+        iris keys export node0 --home /home/sunny/iris/node0/ iriscli
         ```
 
-  #### 2.2 Callback function of hello-world
-  - You need to be in the hello folder under the generated code directory, there is a file response_callback.
+      ##### 3.1.2 Import node0
+
+        - Example of go
+          ```shell
+          hello-sc keys import node0
+          hello-sp keys import node0
+          ```
+          
+        - Example of java
+          
+          java -jar target/hello.sc import node0
+          java -jar target/hello.sp import node0
+
+  ### 3.3 Callback function
+  - The files that need to be modified are on the floder hello.
 
   - **consumer**
-    - Example of golang
+    - Example of go
       ```go
       func ResponseCallback(reqCtxID, reqID, output string) {
         common.Logger.Infof("Get response: %+v\n", output)
@@ -83,10 +125,18 @@
         fmt.Println(serviceOutput.Output)
       }
       ```
-    - When you get a response from provider, input will appear on terminal.
+    
+    - Example of java
+      ```java
+      public void onResponse(ServiceOutput res) {
+        System.out.println("----------------- Consumer -----------------");
+        System.out.println("Got response: "+ JSON.toJSONString(res));
+      }
+      ```
+    - When you get a response from provider, output will appear on terminal.
   
   - **provider**
-    - Example of golang
+    - Example of go
       ```go
       func RequestCallback(reqID, input string) (
         output *types.ServiceOutput,
@@ -113,43 +163,36 @@
         return output, requestResult
       }
       ```
+    
+    - Example of java
+      ```java
+      public ServiceResponse onRequest(ServiceInput req) {
+        System.out.println("----------------- Provider -----------------");
+        Application.logger.info("Got request:");
+        Application.logger.info(JSON.toJSONString(req));
+
+        ServiceOutput serviceOutput = new ServiceOutput();
+        serviceOutput.output = "hello-world";
+
+        Application.logger.info("Sending response");
+        ServiceResponse res = new ServiceResponse(this.keyName, this.password);
+        res.setBody(output);
+        
+        return res;
+      }
+      ```
+
     - When you get a request, input will appear on terminal, and you will give a word "hello-world" to consumer.
   
   - Compile your project.
 
-  #### 2.3 Config of hello-world
-  - Note!!!: The configuration file is in the $HOME/.hello-sc for consumer and $HOME/.hello-sp for provider.
+## 4. Start irisnet.
 
-  - Configuration parameter:
-    | name | description |
-    | :-: | :-: |
-    | chain_id | Chain id |
-    | node_rpc_addr | Node URL |
-    | node_grpc_addr | Node GRPC address |
-    | key_path | Key path |
-    | key_name | Key name |
-    | fee | Transaction fee |
-    | key_algorithm | Key algorithm |
-  
-  - Example
-    ```yaml
-    # service config
-    service:
-      chain_id: iris
-      node_rpc_addr: http://localhost:26657
-      node_grpc_addr: localhost:9090
-      key_path: .keys
-      key_name: node0
-      fee: 4stake
-      key_algorithm: sm2
+    ```shell
+    iris start --home=/home/sunny/iris/node0/iris
     ```
 
-## 3.Start irisnet.
-  ```shell
-  iris start --home=/home/sunny/iris/node0/iris
-  ```
-
-## 4.Define service
+## 5. Define service
   - Open another terminal.
     ```shell
     iris tx service define \
@@ -162,36 +205,52 @@
       --chain-id=iris \
       -b=block -y \
       --home=/home/sunny/iris/node0/iriscli \
-      --fees 10stake \
+      --fees 10uiris
     ```
 
-## 5.Bind service
+## 6. Bind service
 
   ```shell
     iris tx service bind \
       --service-name=hello \
-      --deposit=10000stake \
-      --pricing='{"price":"1stake"}' \
+      --deposit=10000uiris \
+      --pricing='{"price":"1uiris"}' \
       --qos=50 \
       --from=node0 \
       --chain-id=iris \
       -b=block -y \
       --home=/home/sunny/iris/node0/iriscli \
       --options={} \
-      --fees 10stake \
-      --provider=iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv \
+      --fees 10uiris \
+      --provider=iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv
   ```
 
-## 6.Start consumer's subscribe response and provider's subscribe request.
+## 7. Start consumer's subscribe response and provider's subscribe request.
   - **provider**(Subscribe service request first.)
-    ```shell
-    hello-sp start
-    ```
+    - Example of go
+      ```shell
+      hello-sp start
+      ```
+    
+    - Example of java
+      ```shell
+      java -jar target/hello-sp.jar start
+      ```
 
   - **consumer**(Invoke and subscribe service response.)
-    ```shell
-    hello-sc invoke \
-      --providers iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv \
-      --fee-cap 1 \
-      --input {"header":{},"body":{"input":"hello"}} \
-    ```
+  - Note!!!: The unit of fee-cap is the largest!
+    - Example of go
+      ```shell
+      hello-sc invoke \
+        --providers iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv \
+        --fee-cap 1 \
+        --input {"header":{},"body":{"input":"hello"}}
+      ```
+    
+    - Example of java
+      ```shell
+      java -jar target/hello-sc.jar invoke \
+        --providers iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv \
+        --fee-cap 1 \
+        --input {"header":{},"body":{"input":"hello"}}
+      ```

@@ -6,7 +6,6 @@ import (
 	"github.com/irisnet/service-gen/app"
 	"github.com/irisnet/service-gen/common"
 	"github.com/irisnet/service-gen/service"
-	"github.com/irisnet/service-gen/{{service_name}}"
 )
 
 func startCmd() *cobra.Command {
@@ -33,9 +32,7 @@ func startCmd() *cobra.Command {
 
 			serviceClient := service.MakeServiceClientWrapper(service.NewConfig(config), password)
 
-			logger := common.Logger
-
-			appInstance := app.NewApp(serviceClient, {{service_name}}.RequestCallback, logger)
+			appInstance := app.NewApp(serviceClient)
 			appInstance.Start()
 
 			return nil
