@@ -2,46 +2,49 @@
 
 - Codegen tool for service providers and consumers.
 
-- We will complete the process. First, consumer invokes service. Second, provider monitors request and sends response. Third, consumer gets the response.
+- First, provider subscribes request. Second, consumer invokes service. Third, provider sends response. Fourth, consumer gets the response.
 
 - Dependencies:
-  - go project: nodejs & go & git
-  - java project: nodejs & java v1.8 & maven & curl
+  - go project: node.js
+  - java project: nodejs & curl
 
-- This "Hello world" example uses "node0"(addr: iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv) as the consumer and provider.
+- This "Hello-world" example uses "node0"(addr: iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv) as the consumer and provider.
 
 ## 1. Download
-  ```shell
-  git clone https://github.com/irisnet/service-gen.git
-  ```
+
+```shell
+git clone https://github.com/irisnet/service-gen.git
+```
 
 ## 2. Generate code project.
 
-  - Create schemas.json for your code project.
-    ```json
-    {
-      "input": {
-        "type": "object",
-        "properties": {
+  - Prepare schemas.json for your code project.
+    - Example
+        ```json
+        {
           "input": {
-            "type": "string"
-          }
-        }
-      },
-      "output": {
-        "type": "object",
-        "properties": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string"
+              }
+            }
+          },
           "output": {
-            "type": "string"
+            "type": "object",
+            "properties": {
+              "output": {
+                "type": "string"
+              }
+            }
           }
         }
-      }
-    }
-    ```
+        ```
 
-  - Command to build the project: 
+  - Build parameter: 
+  
     | name | description | default value | parameter value |
-    | :-: | :-: | :-: | :-: |
+    | :----: | :----: | :----: | :----: |
     | type | Generate consumer's or provider's code | | consumer(c) provider(p) |
     | lang | Select language | | go, java, js |
     | service-name(s) | Service's name |  |  |
@@ -60,8 +63,9 @@
   - Note!!!: The configuration file is in the $HOME/.hello-sc for consumer and $HOME/.hello-sp for provider.
 
   - Configuration parameter:
+  
     | name | description |
-    | :-: | :-: |
+    | :----: | :----: |
     | chain_id | Chain id |
     | node_rpc_addr | Node URL |
     | node_grpc_addr | Node GRPC address |
@@ -72,19 +76,21 @@
   
   - Example
     ```yaml
-    chain_id: irishub-1
-    node_rpc_addr: http://localhost:26657
-    node_grpc_addr: http://localhost:9090
-    key_path: .keys
-    key_name: node0
-    fee: 4uiris
-    key_algorithm: secp256k1
+    service:
+        chain_id: irishub-1
+        node_rpc_addr: http://localhost:26657
+        node_grpc_addr: http://localhost:9090
+        key_path: .keys
+        key_name: node0
+        fee: 4uiris
+        key_algorithm: secp256k1
     ```
   ### 3.2 Key management
 
-  - Commond to key management
+  - Key parameter:
+  
     | commond | description |
-    | :-: | :-: |
+    | :----: | :----: |
     | add | New-build key |
     | show | Show information of key |
     | import | Import key |
@@ -107,9 +113,10 @@
           ```
           
         - Example of java
-          
+          ```shell
           java -jar target/hello.sc import node0
           java -jar target/hello.sp import node0
+          ```
 
   ### 3.3 Callback function
   - The files that need to be modified are on the floder hello.
@@ -132,7 +139,8 @@
         System.out.println("Got response: "+ JSON.toJSONString(res));
       }
       ```
-    - When you get a response from provider, output will appear on terminal.
+      
+    - When consumer get a response from provider, output will appear on terminal.
   
   - **provider**
     - Example of go
@@ -181,47 +189,46 @@
       }
       ```
 
-    - When you get a request, input will appear on terminal, and you will give a word "hello-world" to consumer.
+    - When provider get a request, input will appear on provider's terminal, and provider will give a word "hello-world" to consumer.
   
   - Compile your project.
 
 ## 4. Start irisnet.
 
-    ```shell
-    iris start --home=mytestnet/node0/iris
-    ```
+```shell
+iris start --home=mytestnet/node0/iris
+```
 
 ## 5. Define service
-  - Open another terminal.
-    ```shell
-    iris tx service define \
-      --name=hello \
-      --description=test \
-      --author-description=test \
-      --tags=test \
-      --schemas=/mnt/d/gocode/src/now/test.json \
-      --from=node0 \
-      --chain-id=iris \
-      -b=block -y \
-      --home=/home/sunny/iris/node0/iriscli \
-      --fees 10uiris
-    ```
+```shell
+iris tx service define \
+  --name=hello \
+  --description=test \
+  --author-description=test \
+  --tags=test \
+  --schemas=/mnt/d/gocode/src/now/test.json \
+  --from=node0 \
+  --chain-id=iris \
+  -b=block -y \
+  --home=/home/sunny/iris/node0/iriscli \
+  --fees 10uiris
+```
 
 ## 6. Bind service
 
-  ```shell
-    iris tx service bind \
-      --service-name=hello \
-      --deposit=10000uiris \
-      --pricing='{"price":"1uiris"}' \
-      --qos=50 \
-      --from=node0 \
-      --chain-id=iris \
-      -b=block -y \
-      --home=/home/sunny/iris/node0/iriscli \
-      --options={} \
-      --fees 10uiris \
-      --provider=iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv
+```shell
+iris tx service bind \
+  --service-name=hello \
+  --deposit=10000uiris \
+  --pricing='{"price":"1uiris"}' \
+  --qos=50 \
+  --from=node0 \
+  --chain-id=iris \
+  -b=block -y \
+  --home=/home/sunny/iris/node0/iriscli \
+  --options={} \
+  --fees 10uiris \
+  --provider=iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv
   ```
 
 ## 7. Start consumer's subscribe response and provider's subscribe request.
@@ -237,12 +244,12 @@
       ```
 
   - **consumer**(Invoke and subscribe service response.)
-  - Note!!!: The unit of fee-cap is the largest!
+  - Note!!!: The cost of the fee-cap should be the largest unit!
     - Example of go
       ```shell
       hello-sc invoke \
         --providers iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv \
-        --fee-cap 1 \
+        --fee-cap 1iris \
         --input {"header":{},"body":{"input":"hello"}}
       ```
     
