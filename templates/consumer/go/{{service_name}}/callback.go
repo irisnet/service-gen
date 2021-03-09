@@ -1,10 +1,5 @@
-package
+package {{service_name}}
 
-import (
-	"encoding/json"
-	"github.com/irisnet/service-gen/common"
-)
-{{service_name}}
 
 import (
 	"encoding/json"
