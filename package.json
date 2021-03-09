@@ -1,1 +1,22 @@
-{}
+{
+    "name": "service-gen",
+    "description": "Codegen tool for iService providers and consumers",
+    "version": "1.0.0",
+    "main": "service-gen.js",
+    "devDependencies": {},
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/irisnet/service-gen.git"
+    },
+    "author": "irisnet",
+    "license": "Apache License 2.0",
+    "bugs": {
+        "url": "https://github.com/irisnet/service-gen/issues"
+    },
+    "homepage": "https://github.com/irisnet/service-gen#readme",
+    "requires": true,
+    "lockfileVersion": 1,
+    "dependencies": {
+        "commander": "^6.2.0"
+    }
+}

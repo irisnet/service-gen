@@ -19,24 +19,24 @@
 
   - Create schemas.json for your code project.
     ```json
-      {
-        "input": {
-          "type": "object",
-          "properties": {
-            "input": {
-              "type": "string"
-            }
+    {
+      "input": {
+        "type": "object",
+        "properties": {
+          "input": {
+            "type": "string"
           }
-        },
-        "output": {
-          "type": "object",
-          "properties": {
-            "output": {
-              "type": "string"
-            }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "output": {
+            "type": "string"
           }
         }
       }
+    }
     ```
 
   - Command to build the project: 
@@ -47,10 +47,11 @@
     | service-name(s) | Service's name |  |  |
     | schemas | Path of schemas | ./schemas.json |  |
     | output-dir(o) | Generate path | ../output |  |
+  
   - Example
     ```shell
-    node service-gen.js --type consumer --lang go --service-name hello --schemas schemas.json --output-dir ../consumer
-    node service-gen.js --type provider --lang go --service-name hello --schemas schemas.json --output-dir ../provider
+    node service-gen.js --type consumer --lang go --service-name hello --schemas schemas.json --output ./consumer
+    node service-gen.js --type provider --lang go --service-name hello --schemas schemas.json --output ./provider
     ```
 
 ## 3. Get ready
@@ -71,16 +72,14 @@
   
   - Example
     ```yaml
-    chain_id: iris
+    chain_id: irishub-1
     node_rpc_addr: http://localhost:26657
     node_grpc_addr: http://localhost:9090
     key_path: .keys
     key_name: node0
     fee: 4uiris
-    key_algorithm: sm2
+    key_algorithm: secp256k1
     ```
-
-
   ### 3.2 Key management
 
   - Commond to key management
@@ -95,16 +94,16 @@
       ##### 3.1.1 Export node0
 
         ```shell
-        iris testnet --v=1 --chain-id=iris -o=/home/sunny/iris
-        iris keys export node0 --home /home/sunny/iris/node0/ iriscli
+        iris testnet --v=1 --chain-id=iris
+        iris keys export node0
         ```
 
       ##### 3.1.2 Import node0
 
         - Example of go
           ```shell
-          hello-sc keys import node0
-          hello-sp keys import node0
+          hello-sc keys import node0 node0.key
+          hello-sp keys import node0 node0.key
           ```
           
         - Example of java
@@ -189,7 +188,7 @@
 ## 4. Start irisnet.
 
     ```shell
-    iris start --home=/home/sunny/iris/node0/iris
+    iris start --home=mytestnet/node0/iris
     ```
 
 ## 5. Define service
