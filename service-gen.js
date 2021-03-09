@@ -60,7 +60,7 @@ if (type === "consumer") {
   config_path = os.homedir() + "/." + service_name + "-sp/"
 }
 // Record schemas path
-const schemas = require(schemasPath)
+const schemas = JSON.parse(fs.readFileSync(schemasPath).toString().trim());
 console.log("Complete initialization.")
 
 // 2 Copy the specified template to the specified project path

@@ -1,10 +1,4 @@
-package
-
-import (
-	"encoding/json"
-	"github.com/irisnet/service-gen/common"
-)
-{{service_name}}
+package {{service_name}}
 
 import (
 	"encoding/json"
@@ -17,8 +11,9 @@ import (
 
 // ResponseCallback provider need to supplementary service logic
 func ResponseCallback(reqCtxID, reqID, output string) {
-	common.Logger.Info("Get response: \n", output)
 	serviceOutput := parseOutput(output)
+	outputStr, _ := json.Marshal(serviceOutput)
+	common.Logger.Info("Get response: \n", outputStr)
 	// Supplementary service logic...
 
 }
