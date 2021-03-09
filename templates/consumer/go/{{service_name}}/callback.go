@@ -1,6 +1,5 @@
 package {{service_name}}
 
-
 import (
 	"encoding/json"
 
