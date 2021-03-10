@@ -17,12 +17,13 @@ func RequestCallback(reqID, input string) (
 	output = &types.ServiceOutput{}
 	requestResult = &types.RequestResult{}
 	serviceInput, err := parseInput(input)
+	inputBytes, err := json.Marshal(serviceInput.Input)
 	if err != nil {
 		requestResult.State = types.ClientError
 		requestResult.Message = "failed to parse input"
 		return nil, requestResult
 	}
-	common.Logger.Info("Get request: \n", serviceInput)
+	common.Logger.Info("Get request: \n", string(inputBytes))
 	// Supplementary service logic...
 
 	return output, requestResult

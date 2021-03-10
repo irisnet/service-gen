@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -31,9 +29,9 @@ func invokeCmd() *cobra.Command {
 		Use:   "invoke",
 		Short: "Invoke service",
 		Example: `a
-hello-sc invoke [config-path] \
+{{service_name}}-sc invoke [config-path] \
 	--providers iaa135p42vm5vxrk4rmryn6sqgusm4yqwxmqgm05tn \
-	--fee-cap 1 \
+	--fee-cap 0.04iris \
 	--input '{"header":{},"body":{"input":"hello"}}' \
 	--timeout 100 \
 	--frequency 110 \
@@ -41,10 +39,9 @@ hello-sc invoke [config-path] \
 		Args: cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			password := getPassword()
-			fmt.Println(args)
 
 			providers := viper.GetStringSlice(flagProviders)
-			feeCap := viper.GetInt64(flagFeeCap)
+			feeCap := viper.GetString(flagFeeCap)
 			input := viper.GetString(flagInput)
 			timeout := viper.GetInt64(flagTimeout)
 			repeated := viper.GetBool(flagRepeated)
@@ -64,7 +61,12 @@ hello-sc invoke [config-path] \
 				return err
 			}
 
-			serviceFeeCap := sdkTypes.NewDecCoins(sdkTypes.NewDecCoin(types.FeeReg.FindString(config.GetString(common.GetConfigKey(service.Prefix, service.Fee))), sdkTypes.NewInt(int64(feeCap))))
+			feecap, err := sdkTypes.ParseDecCoin(feeCap)
+			if err != nil {
+				return err
+			}
+
+			serviceFeeCap := sdkTypes.NewDecCoins(feecap)
 
 			invokeConfig := servicesdk.InvokeServiceRequest{
 				ServiceName:       types.ServiceName,
@@ -103,7 +105,7 @@ var (
 
 func init() {
 	fsInvoke.StringSlice(flagProviders, nil, "Providers that you want to invoke(Use '/' to split).")
-	fsInvoke.Int64(flagFeeCap, 0, "fee cap")
+	fsInvoke.String(flagFeeCap, "", "fee cap")
 	fsInvoke.String(flagInput, "", "input")
 	fsInvoke.Int64(flagTimeout, types.DefaultTimeout, "timeout")
 	fsInvoke.Bool(flagRepeated, types.DefaultRepeated, "wheather repeat")

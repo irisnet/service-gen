@@ -7,7 +7,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/irisnet/service-gen/common"
-	"github.com/irisnet/service-gen/types"
 )
 
 // ServiceClientWrapper defines a wrapper for service client

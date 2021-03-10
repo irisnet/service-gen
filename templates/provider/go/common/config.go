@@ -4,12 +4,10 @@ import (
 	"fmt"
 
 	"github.com/spf13/viper"
-
-	"github.com/irisnet/service-gen/utils"
 )
 
 var (
-	ConfigPath = utils.MustGetHomeDir() + "/.{{service_name}}-sp/config.yaml"
+	ConfigPath = "./config/config.yaml"
 )
 
 // LoadYAMLConfig loads the YAML config file
