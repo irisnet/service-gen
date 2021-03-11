@@ -159,9 +159,12 @@ git clone https://github.com/irisnet/service-gen.git
 
     - When provider get a request, input will appear on provider's terminal, and provider will give a word "hello-world" to consumer.
   
-  ### 3.4 Compile project.
+  ### 3.3 Compile project.
   
-  ### 3.3 Key management
+
+## 4. [Start irisnet](https://www.irisnet.org/docs/get-started/testnet.html#public-endpoints).
+
+## 5. Key management
     
   - Key parameter:
   
@@ -176,7 +179,6 @@ git clone https://github.com/irisnet/service-gen.git
       ##### 3.1.1 Export node0
 
         ```shell
-        iris testnet --v=1 --chain-id=irishub-1 -o ./mytest --keyring-backend file
         iris keys export node0
         ```
 
@@ -194,11 +196,6 @@ git clone https://github.com/irisnet/service-gen.git
           java -jar target/hello.sp import node0
           ```
 
-## 4. Start irisnet.
-
-```shell
-iris start --home=mytestnet/node0/iris
-```
 
 ## 5. Define service
 ```shell
