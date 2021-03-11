@@ -5,7 +5,7 @@
 - Consumer invokes service, Provider sends response, Consumer gets the response.
 
 - Requires:
-  - Node [10.21.0+](https://nodejs.org/) 
+  - [Node](https://nodejs.org/) 
 
 - This "Hello-world" example uses "node0"(addr: iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv) as the consumer and provider.
 
