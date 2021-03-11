@@ -2,6 +2,8 @@
 
 - Codegen tool for service providers and consumers.
 
+- Consumer invokes service, Provider sends response, Consumer gets the response.
+
 - Dependencies:
   - go project: Node {10.21.0}+
   - java project: Node {10.21.0+} & Curl
