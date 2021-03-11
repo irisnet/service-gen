@@ -51,8 +51,9 @@ git clone https://github.com/irisnet/service-gen.git
   
   - Example
     ```shell
-    node service-gen.js --type consumer --lang go --service-name hello --schemas schemas.json --output ../consumer
-    node service-gen.js --type provider --lang go --service-name hello --schemas schemas.json --output ../provider
+    npm install
+    node service-gen.js --type consumer --lang go --service-name hello --schemas schemas.json --output ./consumer
+    node service-gen.js --type provider --lang go --service-name hello --schemas schemas.json --output ./provider
     ```
 
 ## 3. Get ready
