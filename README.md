@@ -2,11 +2,9 @@
 
 - Codegen tool for service providers and consumers.
 
-- First, provider subscribes request. Second, consumer invokes service. Third, provider sends response. Fourth, consumer gets the response.
-
 - Dependencies:
-  - go project: node.js
-  - java project: nodejs & curl
+  - go project: Node {10.21.0}+
+  - java project: Node {10.21.0+} & Curl
 
 - This "Hello-world" example uses "node0"(addr: iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv) as the consumer and provider.
 

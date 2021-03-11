@@ -53,14 +53,6 @@ if (fs.existsSync(output_dir) === false) {
 // Record template path
 let template_path = fs.realpathSync('.') + "/templates/" + type + "/" + lang
 
-// // Record config path
-// let config_path
-// if (type === "consumer") {
-//   config_path = os.homedir() + "/." + service_name + "-sc/"
-// } else {
-//   config_path = os.homedir() + "/." + service_name + "-sp/"
-// }
-
 // Record schemas path
 const schemas = JSON.parse(fs.readFileSync(schemasPath).toString().trim());
 console.log("Complete initialization.")
@@ -76,14 +68,10 @@ if (lang === "java") {
 // 3 Modify template variables
 // Modify folder name
 if (lang === "go") {
-  // utils.DeleteDir(output_dir + "/config")
-  // utils.CopyDir(template_path + "/config", config_path)
   fs.mkdirSync(output_dir + "/" + service_name)
   fs.renameSync(output_dir + "/{{service_name}}/callback.go", output_dir + "/" + service_name + "/callback.go")
   fs.rmdirSync(output_dir + "/{{service_name}}")
 } else if (lang === "java") {
-  // utils.DeleteDir(output_dir + "/src/main/java/service/" + type + "/config")
-  // utils.CopyDir(template_path + "/src/main/java/service/" + type + "/config", config_path)
   fs.mkdirSync(output_dir + "/src/main/java/service/" + type + "/" + service_name)
   fs.renameSync(output_dir + "/src/main/java/service/" + type + "/{{service_name}}/CallbackImpl.java", output_dir + "/src/main/java/service/" + type + "/" + service_name + "/CallbackImpl.java")
   fs.rmdirSync(output_dir + "/src/main/java/service/" + type + "/{{service_name}}")
