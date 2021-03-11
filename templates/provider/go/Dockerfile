@@ -16,5 +16,3 @@ RUN make install
 FROM alpine:3.12
 
 COPY --from=builder /go/bin/{{service_name}}-sp /usr/local/bin
-
-EXPOSE 8888
