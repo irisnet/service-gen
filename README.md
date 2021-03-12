@@ -176,13 +176,13 @@ git clone https://github.com/irisnet/service-gen.git
       
     - You need to put the exported information into a file node0.key, and specify the path of the file in config.yaml.
 
-      ##### 3.1.1 Export node0
+      ### 5.1 Export node0
 
         ```shell
         iris keys export node0
         ```
 
-      ##### 3.1.2 Import node0
+      ### 5.2 Import node0
 
         - Example of go
           ```shell
@@ -197,7 +197,7 @@ git clone https://github.com/irisnet/service-gen.git
           ```
 
 
-## 5. Define service
+## 6. Define service
 ```shell
 iris tx service define \
   --name=hello \
@@ -213,7 +213,7 @@ iris tx service define \
   --fees 40000uiris 
 ```
 
-## 6. Bind service
+## 7. Bind service
 
 ```shell
 iris tx service bind \
@@ -231,7 +231,7 @@ iris tx service bind \
   --provider=iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv
   ```
 
-## 7. Start consumer's subscribe response and provider's subscribe request.
+## 8. Start consumer's subscribe response and provider's subscribe request.
   - **provider**(Subscribe service request first.)
     - Example of go
       ```shell
