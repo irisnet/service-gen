@@ -119,35 +119,6 @@ func (s ServiceClientWrapper) InvokeService(invokeConfig service.InvokeServiceRe
 	return reqCtxID, reqID, nil
 }
 
-// SubscribeServiceResponse wraps service.SubscribeServiceResponse
-func (s ServiceClientWrapper) SubscribeServiceResponse(
-	reqCtxID, reqID,
-	consumerAddr string,
-	responseCallback types.ResponseCallback,
-) error {
-	builder := createFilter(reqID, consumerAddr)
-
-	callback := func(txs sdkTypes.EventDataTx) {
-		for _, v := range txs.Result.Events {
-			if v.GetType() == "service_slash" {
-				common.Logger.Info("Illegal event detected")
-				return
-			}
-		}
-
-		serviceResponseResponse, err := s.ServiceClient.QueryServiceResponse(reqID)
-		if err != nil {
-			common.Logger.Info("fail to query output", err)
-			return
-		}
-
-		responseCallback(reqCtxID, reqID, serviceResponseResponse.Output)
-	}
-
-	_, err := s.ServiceClient.SubscribeTx(builder, callback)
-	return err
-}
-
 // buildBaseTx builds a base tx
 func (s ServiceClientWrapper) buildBaseTx() sdkTypes.BaseTx {
 	return sdkTypes.BaseTx{

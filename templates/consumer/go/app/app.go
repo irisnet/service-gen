@@ -1,21 +1,20 @@
 package app
 
 import (
-	"fmt"
+	"time"
 
-	servicesdk "github.com/irisnet/service-sdk-go/service"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/irisnet/service-gen/common"
-	"github.com/irisnet/service-gen/service"
 	callback "github.com/irisnet/service-gen/{{service_name}}"
-	"github.com/irisnet/service-gen/types"
+	"github.com/irisnet/service-gen/service"
+	servicesdk "github.com/irisnet/service-sdk-go/service"
 )
 
 // App represents the provider application
 type App struct {
 	ServiceClient    service.ServiceClientWrapper
-	ResponseCallback types.ResponseCallback
+	ResponseCallback servicesdk.InvokeCallback
 	Logger           *log.Logger
 }
 
@@ -28,34 +27,30 @@ func NewApp(serviceClient service.ServiceClientWrapper) App {
 	}
 }
 
-func (app App) subscribe(reqCtxID, reqID string) {
-	addr, err := app.ServiceClient.ShowKey(app.ServiceClient.KeyName, app.ServiceClient.Password)
-	if err != nil {
-		app.Logger.Errorf("failed to register service request listener, err: %s", err.Error())
-		return
-	}
-	// Subscribe
-	err = app.ServiceClient.SubscribeServiceResponse(reqCtxID, reqID, addr, app.ResponseCallback)
-	if err != nil {
-		app.Logger.Errorf("failed to subscribe service request, err: %s", err.Error())
-		return
-	}
-
-	select {}
-}
-
 // Invoke providers' service
 func (app App) Invoke(invokeConfig servicesdk.InvokeServiceRequest) {
-	invokeConfig.Callback = callback.ResponseCallback
+	invokeConfig.Callback = app.ResponseCallback
 	reqCtxID, reqID, err := app.ServiceClient.InvokeService(invokeConfig)
 	if err != nil {
 		app.Logger.Errorf("failed to invoke service request, err: %s \n", err.Error())
 		return
 	}
 
-	fmt.Println("Successfully invoke service.")
-	fmt.Println("reqCtxID:", reqCtxID)
-	fmt.Println("reqID:", reqID)
+	common.Logger.Info("Successfully invoke service.")
+	common.Logger.Info("reqCtxID:", reqCtxID)
+	common.Logger.Info("reqID:", reqID)
 
-	app.subscribe(reqCtxID, reqID)
+	for {
+		queryRequestContextResp, err := app.ServiceClient.ServiceClient.QueryRequestContext(reqCtxID)
+		if err != nil {
+			common.Logger.Error("lost a block")
+		}
+
+		if queryRequestContextResp.ServiceName == "" {
+			common.Logger.Info("finished subscribing")
+			return
+		}
+
+		time.Sleep(5 * time.Second)
+	}
 }

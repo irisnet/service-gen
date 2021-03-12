@@ -5,7 +5,6 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/irisnet/service-gen/common"
-	"github.com/irisnet/service-gen/utils"
 )
 
 // default config variables
@@ -13,7 +12,7 @@ var (
 	defaultChainID       = "iris-hub"
 	defaultNodeRPCAddr   = "http://127.0.0.1:26657"
 	defaultNodeGRPCAddr  = "127.0.0.1:9090"
-	defaultKeyPath       = utils.MustGetHomeDir() + "/.iriscli"
+	defaultKeyPath       = "./keys"
 	defaultGas           = uint64(200000)
 	defaultFee           = "4uiris"
 	defaultBroadcastMode = types.Commit

@@ -2,46 +2,48 @@
 
 - Codegen tool for service providers and consumers.
 
-- We will complete the process. First, consumer invokes service. Second, provider monitors request and sends response. Third, consumer gets the response.
+- Consumer invokes service, Provider sends response, Consumer gets the response.
 
-- Dependencies:
-  - go project: nodejs & go & git
-  - java project: nodejs & java v1.8 & maven & curl
+- Requires:
+  - [Node](https://nodejs.org/) 
 
-- This "Hello world" example uses "node0"(addr: iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv) as the consumer and provider.
+- This "Hello-world" example uses "node0"(addr: iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv) as the consumer and provider.
 
 ## 1. Download
-  ```shell
-  git clone https://github.com/irisnet/service-gen.git
-  ```
+
+```shell
+git clone https://github.com/irisnet/service-gen.git
+```
 
 ## 2. Generate code project.
 
-  - Create schemas.json for your code project.
-    ```json
-    {
-      "input": {
-        "type": "object",
-        "properties": {
+  - Prepare schemas.json for your code project.
+    - Example
+        ```json
+        {
           "input": {
-            "type": "string"
-          }
-        }
-      },
-      "output": {
-        "type": "object",
-        "properties": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string"
+              }
+            }
+          },
           "output": {
-            "type": "string"
+            "type": "object",
+            "properties": {
+              "output": {
+                "type": "string"
+              }
+            }
           }
         }
-      }
-    }
-    ```
+        ```
 
-  - Command to build the project: 
+  - Build parameter: 
+  
     | name | description | default value | parameter value |
-    | :-: | :-: | :-: | :-: |
+    | :----: | :----: | :----: | :----: |
     | type | Generate consumer's or provider's code | | consumer(c) provider(p) |
     | lang | Select language | | go, java, js |
     | service-name(s) | Service's name |  |  |
@@ -50,6 +52,7 @@
   
   - Example
     ```shell
+    npm install
     node service-gen.js --type consumer --lang go --service-name hello --schemas schemas.json --output ./consumer
     node service-gen.js --type provider --lang go --service-name hello --schemas schemas.json --output ./provider
     ```
@@ -57,11 +60,12 @@
 ## 3. Get ready
 
   ### 3.1 Config
-  - Note!!!: The configuration file is in the $HOME/.hello-sc for consumer and $HOME/.hello-sp for provider.
+  - The configuration file is in the config folder.
 
   - Configuration parameter:
+  
     | name | description |
-    | :-: | :-: |
+    | :----: | :----: |
     | chain_id | Chain id |
     | node_rpc_addr | Node URL |
     | node_grpc_addr | Node GRPC address |
@@ -72,56 +76,27 @@
   
   - Example
     ```yaml
-    chain_id: irishub-1
-    node_rpc_addr: http://localhost:26657
-    node_grpc_addr: http://localhost:9090
-    key_path: .keys
-    key_name: node0
-    fee: 4uiris
-    key_algorithm: secp256k1
+    service:
+        chain_id: irishub-1
+        node_rpc_addr: http://localhost:26657
+        node_grpc_addr: http://localhost:9090
+        key_path: .keys
+        key_name: node0
+        fee: 40000uiris
+        key_algorithm: secp256k1
     ```
-  ### 3.2 Key management
 
-  - Commond to key management
-    | commond | description |
-    | :-: | :-: |
-    | add | New-build key |
-    | show | Show information of key |
-    | import | Import key |
-      
-    - You need to put the exported information into a file node0.key, and specify the path of the file in config.yaml.
-
-      ##### 3.1.1 Export node0
-
-        ```shell
-        iris testnet --v=1 --chain-id=iris
-        iris keys export node0
-        ```
-
-      ##### 3.1.2 Import node0
-
-        - Example of go
-          ```shell
-          hello-sc keys import node0 node0.key
-          hello-sp keys import node0 node0.key
-          ```
-          
-        - Example of java
-          
-          java -jar target/hello.sc import node0
-          java -jar target/hello.sp import node0
-
-  ### 3.3 Callback function
+  ### 3.2 Callback function
   - The files that need to be modified are on the floder hello.
 
   - **consumer**
     - Example of go
       ```go
       func ResponseCallback(reqCtxID, reqID, output string) {
-        common.Logger.Infof("Get response: %+v\n", output)
-        serviceOutput := parseOutput(output)
-        // Supplementary service logic...
-        fmt.Println(serviceOutput.Output)
+      	common.Logger.Infof("Get response: %+v\n", output)
+      	serviceOutput := parseOutput(output)
+      	// Supplementary service logic...
+      	common.Logger.Info(serviceOutput.Output)
       }
       ```
     
@@ -132,34 +107,35 @@
         System.out.println("Got response: "+ JSON.toJSONString(res));
       }
       ```
-    - When you get a response from provider, output will appear on terminal.
+      
+    - When consumer get a response from provider, output will appear on terminal.
   
   - **provider**
     - Example of go
       ```go
       func RequestCallback(reqID, input string) (
-        output *types.ServiceOutput,
-        requestResult *types.RequestResult,
+      	output *types.ServiceOutput,
+      	requestResult *types.RequestResult,
       ) {
-        serviceInput, err := parseInput(input)
-        if err != nil {
-          requestResult = &types.RequestResult{
-            State:   types.ClientError,
-            Message: "failed to parse input",
-          }
-          return nil, requestResult
-        }
-        // Supplementary service logic...
-        fmt.Println(serviceInput.Input)
-        var o string = "hello-world"
-        output = &types.ServiceOutput{
-          Output: &o,
-        }
-        requestResult = &types.RequestResult{
-          State:   types.Success,
-          Message: "success",
-        }
-        return output, requestResult
+      	serviceInput, err := parseInput(input)
+      	if err != nil {
+      		requestResult = &types.RequestResult{
+      			State:   types.ClientError,
+      			Message: "failed to parse input",
+      		}
+      		return nil, requestResult
+      	}
+      	// Supplementary service logic...
+      	common.Logger.Info(serviceInput.Input)
+      	var o string = "hello-world"
+      	output = &types.ServiceOutput{
+      		Output: &o,
+      	}
+      	requestResult = &types.RequestResult{
+      		State:   types.Success,
+      		Message: "success",
+      	}
+      	return output, requestResult
       }
       ```
     
@@ -181,50 +157,77 @@
       }
       ```
 
-    - When you get a request, input will appear on terminal, and you will give a word "hello-world" to consumer.
+    - When provider get a request, input will appear on provider's terminal, and provider will give a word "hello-world" to consumer.
   
-  - Compile your project.
+  ### 3.3 Compile project.
+  
 
-## 4. Start irisnet.
+## 4. [Start irisnet](https://www.irisnet.org/docs/daemon/local-testnet.html#single-node-testnet).
 
-    ```shell
-    iris start --home=mytestnet/node0/iris
-    ```
+## 5. Key management
+    
+  - Key parameter:
+  
+    | commond | description |
+    | :----: | :----: |
+    | add | New-build key |
+    | show | Show information of key |
+    | import | Import key |
+      
+    - You need to put the exported information into a file node0.key, and specify the path of the file in config.yaml.
 
-## 5. Define service
-  - Open another terminal.
-    ```shell
-    iris tx service define \
-      --name=hello \
-      --description=test \
-      --author-description=test \
-      --tags=test \
-      --schemas=/mnt/d/gocode/src/now/test.json \
-      --from=node0 \
-      --chain-id=iris \
-      -b=block -y \
-      --home=/home/sunny/iris/node0/iriscli \
-      --fees 10uiris
-    ```
+      ### 5.1 Export node0
 
-## 6. Bind service
+        ```shell
+        iris keys export node0
+        ```
 
-  ```shell
-    iris tx service bind \
-      --service-name=hello \
-      --deposit=10000uiris \
-      --pricing='{"price":"1uiris"}' \
-      --qos=50 \
-      --from=node0 \
-      --chain-id=iris \
-      -b=block -y \
-      --home=/home/sunny/iris/node0/iriscli \
-      --options={} \
-      --fees 10uiris \
-      --provider=iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv
+      ### 5.2 Import node0
+
+        - Example of go
+          ```shell
+          hello-sc keys import node0 node0.key
+          hello-sp keys import node0 node0.key
+          ```
+          
+        - Example of java
+          ```shell
+          java -jar target/hello.sc import node0
+          java -jar target/hello.sp import node0
+          ```
+
+
+## 6. Define service
+```shell
+iris tx service define \
+  --name=hello \
+  --description=test \
+  --author-description=test \
+  --tags=test \
+  --schemas=/home/sunny/test.json \
+  --from=node0 \
+  --chain-id=irishub-1 \
+  -b=block -y \
+  --fees 40000uiris 
+```
+
+## 7. Bind service
+
+```shell
+iris tx service bind \
+  --service-name=hello \
+  --deposit=100000000000uiris \
+  --pricing='{"price":"1uiris"}' \
+  --qos=10 \
+  --from=node0 \
+  --chain-id=irishub-1 \
+  -b=block -y \
+  --options={} \
+  --fees 40000uiris \
+  --provider=iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv
   ```
 
-## 7. Start consumer's subscribe response and provider's subscribe request.
+## 8. Start consumer's subscribe response and provider's subscribe request.
   - **provider**(Subscribe service request first.)
     - Example of go
       ```shell
@@ -237,19 +240,22 @@
       ```
 
   - **consumer**(Invoke and subscribe service response.)
-  - Note!!!: The unit of fee-cap is the largest!
+  - Note!!!: The cost of the fee-cap should be the largest unit!
     - Example of go
       ```shell
       hello-sc invoke \
         --providers iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv \
-        --fee-cap 1 \
-        --input {"header":{},"body":{"input":"hello"}}
+        --fee-cap 0.04iris \
+        --input '{"header":{},"body":{"input":"hello"}}' \
+        --frequency 11 --timeout 11 --total 1
       ```
     
     - Example of java
       ```shell
       java -jar target/hello-sc.jar invoke \
         --providers iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv \
-        --fee-cap 1 \
+        --fee-cap 0.04iris \
         --input {"header":{},"body":{"input":"hello"}}
       ```
+     
+  - When consumer get response, program will stop soon.
