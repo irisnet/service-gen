@@ -208,7 +208,6 @@ iris tx service define \
   --from=node0 \
   --chain-id=irishub-1 \
   -b=block -y \
-  --home=mytestnet/node0/iriscli \
   --fees 40000uiris 
 ```
 
@@ -223,7 +222,6 @@ iris tx service bind \
   --from=node0 \
   --chain-id=irishub-1 \
   -b=block -y \
-  --home=mytestnet/node0/iriscli \
   --options={} \
   --fees 40000uiris \
   --provider=iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv
