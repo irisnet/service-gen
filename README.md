@@ -162,7 +162,7 @@ git clone https://github.com/irisnet/service-gen.git
   ### 3.3 Compile project.
   
 
-## 4. [Start irisnet](https://www.irisnet.org/docs/get-started/testnet.html#public-endpoints).
+## 4. [Start irisnet](https://www.irisnet.org/docs/daemon/local-testnet.html#single-node-testnet).
 
 ## 5. Key management
     
@@ -209,7 +209,6 @@ iris tx service define \
   --chain-id=irishub-1 \
   -b=block -y \
   --home=mytestnet/node0/iriscli \
-  --keyring-backend file \
   --fees 40000uiris 
 ```
 
@@ -225,7 +224,6 @@ iris tx service bind \
   --chain-id=irishub-1 \
   -b=block -y \
   --home=mytestnet/node0/iriscli \
-  --keyring-backend file \
   --options={} \
   --fees 40000uiris \
   --provider=iaa15e06fun0plgm22x480g23qeptxu44s4r7cuskv
